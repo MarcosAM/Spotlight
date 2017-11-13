@@ -5,10 +5,29 @@ using UnityEngine;
 public class Weapon : MonoBehaviour {
 
 	public Projectile projectilePrefab;
+	public int currentAmmunition;
+	public int maxAmmunition;
+
+	public float standartRechargeTime;
+	public float currentRechargeTime;
+	public float countdownToRecharge;
+
+	void Update(){
+		if (currentAmmunition < maxAmmunition) {
+			countdownToRecharge += Time.deltaTime;
+			if (countdownToRecharge >= currentRechargeTime) {
+				currentAmmunition++;
+				countdownToRecharge = 0;
+			}
+		}
+	}
 
 	public void Shoot (){
-		Projectile projectile = Instantiate (projectilePrefab,transform.position,Quaternion.identity);
-		Vector2 projectileDirection = -transform.up;
-		projectile.direction = projectileDirection.normalized;
+		if(currentAmmunition > 0){
+			Projectile projectile = Instantiate (projectilePrefab,transform.position,Quaternion.identity);
+			Vector2 projectileDirection = -transform.up;
+			projectile.direction = projectileDirection.normalized;
+			currentAmmunition -= 1;
+		}
 	}
 }

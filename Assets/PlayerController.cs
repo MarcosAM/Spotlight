@@ -34,10 +34,11 @@ public class PlayerController : MonoBehaviour {
 	void Update (){
 		LStick = new Vector2 (Input.GetAxis (LHorizontal), Input.GetAxis (LVertical));
 
-		if (Input.GetButtonDown (Dash) && LStick != Vector2.zero) {
+		if (Input.GetButtonDown (Dash) && LStick != Vector2.zero && avatarMovement.dashesAvailable > 0) {
 			avatarMovement.isDashing = true;
 			avatarMovement.dashingDirection = LStick;
 			avatarMovement.currentDashingDuration = 0;
+			avatarMovement.dashesAvailable--;
 		}
 
 		if (Input.GetButtonUp (Dash)) {

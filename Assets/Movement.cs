@@ -8,6 +8,9 @@ public class Movement : MonoBehaviour {
 	public float dashingSpeed;
 	public float dashingDuration;
 	public float currentDashingDuration;
+	public float dashesAvailable = 1;
+	public float rechargeDashTime = 0.3f;
+	public float countdownToRechargeDash = 0;
 	public bool isDashing;
 	public Vector2 dashingDirection;
 
@@ -17,6 +20,9 @@ public class Movement : MonoBehaviour {
 	public Vector2 moveVelocity;
 
 	public bool isUsingController;
+
+	float myAmmunition;
+
 
 	void Start () {
 		myRigidbody2D = GetComponent<Rigidbody2D>();
@@ -34,6 +40,13 @@ public class Movement : MonoBehaviour {
 		if (!isDashing) {
 			GetComponent<BoxCollider2D>().isTrigger = false;
 			moveVelocity = LStick * walkingSpeed;
+			if (dashesAvailable <= 0) {
+				countdownToRechargeDash += Time.deltaTime;
+				if (countdownToRechargeDash >= rechargeDashTime) {
+					dashesAvailable++;
+					countdownToRechargeDash = 0;
+				}
+			}
 		} else{
 			moveVelocity = dashingDirection * dashingSpeed;
 		}
@@ -41,6 +54,25 @@ public class Movement : MonoBehaviour {
 
 	void FixedUpdate (){
 		myRigidbody2D.velocity = moveVelocity;
+	}
+
+	void OnTriggerEnter2D(Collider2D c){
+		if (c.GetComponent<Movement> () == null)
+			isDashing = false;
+		else {
+			if(isDashing){
+				float myAmmunition = GetComponent<Weapon> ().currentAmmunition;
+				float theirAmmunition = c.GetComponent<Weapon> ().currentAmmunition;
+				GetComponent<Weapon> ().currentAmmunition = theirAmmunition;
+				c.GetComponent<Weapon> ().currentAmmunition = myAmmunition;
+				dashesAvailable++;
+				if (c.GetComponent<Movement> ().dashesAvailable <= 0) {
+					countdownToRechargeDash = -rechargeDashTime * 2;
+				} else {
+					c.GetComponent<Movement> ().dashesAvailable--;
+				}
+			}
+		}
 	}
 
 	public void RotateBy (float angle){

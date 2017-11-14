@@ -13,7 +13,7 @@ public class Weapon : MonoBehaviour {
 	public float countdownToRecharge;
 
 	void Update(){
-		if (currentAmmunition < maxAmmunition) {
+		if (currentAmmunition < maxAmmunition && !GetComponent<Movement>().isDashing) {
 			countdownToRecharge += Time.deltaTime;
 			if (countdownToRecharge >= currentRechargeTime) {
 				currentAmmunition++;

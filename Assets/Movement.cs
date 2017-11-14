@@ -25,12 +25,14 @@ public class Movement : MonoBehaviour {
 	void Update ()
 	{
 		if (isDashing) {
+			GetComponent<BoxCollider2D>().isTrigger = true;
 			currentDashingDuration += Time.deltaTime;
 			if (currentDashingDuration >= dashingDuration)
 				isDashing = false;
 		}
 
 		if (!isDashing) {
+			GetComponent<BoxCollider2D>().isTrigger = false;
 			moveVelocity = LStick * walkingSpeed;
 		} else{
 			moveVelocity = dashingDirection * dashingSpeed;

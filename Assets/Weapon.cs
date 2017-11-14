@@ -5,8 +5,8 @@ using UnityEngine;
 public class Weapon : MonoBehaviour {
 
 	public Projectile projectilePrefab;
-	public int currentAmmunition;
-	public int maxAmmunition;
+	public float currentAmmunition;
+	public float maxAmmunition;
 
 	public float standartRechargeTime;
 	public float currentRechargeTime;

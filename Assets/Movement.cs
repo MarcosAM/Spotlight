@@ -25,6 +25,7 @@ public class Movement : MonoBehaviour {
 
 
 	void Start () {
+		DontDestroyOnLoad(gameObject);
 		myRigidbody2D = GetComponent<Rigidbody2D>();
 	}
 	

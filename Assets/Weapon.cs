@@ -27,6 +27,7 @@ public class Weapon : MonoBehaviour {
 			Projectile projectile = Instantiate (projectilePrefab,transform.position,Quaternion.identity);
 			Vector2 projectileDirection = -transform.up;
 			projectile.direction = projectileDirection.normalized;
+			projectile.weaponFiredMe = GetComponent<Weapon>();
 			currentAmmunition -= 1;
 		}
 	}

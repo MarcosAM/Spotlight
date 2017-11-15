@@ -8,9 +8,26 @@ public class Life : MonoBehaviour {
 	public float currentLife;
 	public bool isAlive = true;
 
+	public float currentTimeToHeal;
+	public float countdownToHeal;
+
+	void Update (){
+		if (currentLife < maxLife) {
+			countdownToHeal += Time.deltaTime;
+			if (countdownToHeal >= currentTimeToHeal) {
+				currentLife++;
+				countdownToHeal = 0;
+			}
+		}
+	}
+
 	public void ReduceLifeBy (float damage){
 		currentLife -= damage;
 		if(currentLife < 0)
-			isAlive = false;
+			Die();
+	}
+
+	public void Die (){
+		isAlive = false;
 	}
 }

@@ -16,10 +16,13 @@ public class PlayerController : MonoBehaviour {
 	string Fire;
 	string Dash;
 
+	public bool isActive = true;
+
 	Vector2 LStick;
 
 	void Start ()
 	{
+		DontDestroyOnLoad(gameObject);
 		LHorizontal = "LHorizontal_P"+number;
 		LVertical = "LVertical_P"+number;
 		RHorizontal = "RHorizontal_P"+number;
@@ -29,9 +32,12 @@ public class PlayerController : MonoBehaviour {
 
 		avatarMovement = avatar.GetComponent<Movement>();
 		avatarWeapon = avatar.GetComponent<Weapon>();
+
+		avatar.SetActive(false);
 	}
 	
 	void Update (){
+		
 		LStick = new Vector2 (Input.GetAxis (LHorizontal), Input.GetAxis (LVertical));
 
 		if (Input.GetButtonDown (Dash) && LStick != Vector2.zero && avatarMovement.dashesAvailable > 0) {
@@ -53,5 +59,12 @@ public class PlayerController : MonoBehaviour {
 		if(!avatarMovement.isDashing && Input.GetButtonDown(Fire)){
 			avatarWeapon.Shoot();
 		}
+	}
+
+	public void ActiveDeactive (){
+		if(isActive)
+			isActive = false;
+		else
+			isActive = true;
 	}
 }

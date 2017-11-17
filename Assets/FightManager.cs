@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class FightManager : MonoBehaviour {
 
+	public float timer;
+	public bool BattleOn;
+
 	void Start () {
 		PlayerController[] playerControllers = FindObjectsOfType<PlayerController>();
 		SpawnPoint[] spawnPoints = FindObjectsOfType<SpawnPoint>();
@@ -14,9 +17,11 @@ public class FightManager : MonoBehaviour {
 				playerControllers[i].avatar.SetActive(true);
 			}
 		}
+
+		timer = 100;
 	}
 	
 	void Update () {
-		
+		timer -= Time.deltaTime;
 	}
 }

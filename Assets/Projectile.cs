@@ -18,7 +18,7 @@ public class Projectile : MonoBehaviour {
 
 	void OnTriggerEnter2D (Collider2D c){
 		if(c.GetComponent<Life>() && c.GetComponent<Weapon>() != weaponFiredMe && !c.GetComponent<Movement>().isDashing){
-			c.GetComponent<Life>().ReduceLifeBy(damage);
+			c.GetComponent<Life>().ReduceLifeBy(damage,weaponFiredMe.gameObject);
 			Destroy(gameObject);
 			return;
 		}

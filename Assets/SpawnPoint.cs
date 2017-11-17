@@ -13,4 +13,7 @@ public class SpawnPoint : MonoBehaviour {
 	void Update () {
 		
 	}
+
+	public void SpawnAvatar(){
+	}
 }

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Life : MonoBehaviour {
 
+	public int points = 0;
+
 	public float maxLife;
 	public float currentLife;
 	public bool isAlive = true;
@@ -21,13 +23,19 @@ public class Life : MonoBehaviour {
 		}
 	}
 
-	public void ReduceLifeBy (float damage){
+	public void ReduceLifeBy (float damage, GameObject attacker){
 		currentLife -= damage;
-		if(currentLife < 0)
+		if (currentLife < 0) {
 			Die();
+			GivePointsTo (attacker);
+		}
 	}
 
 	public void Die (){
 		isAlive = false;
+	}
+
+	public void GivePointsTo(GameObject o){
+		o.GetComponent<Life> ().points++;
 	}
 }

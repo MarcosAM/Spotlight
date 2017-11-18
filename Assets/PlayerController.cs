@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour {
 	public GameObject avatar;
 	public Movement avatarMovement;
 	public Weapon avatarWeapon;
+	public Life avatarLife;
 
 	string LHorizontal;
 	string LVertical;
@@ -32,11 +33,15 @@ public class PlayerController : MonoBehaviour {
 
 		avatarMovement = avatar.GetComponent<Movement>();
 		avatarWeapon = avatar.GetComponent<Weapon>();
+		avatarLife = avatar.GetComponent<Life>();
 
 		avatar.SetActive(false);
 	}
 	
 	void Update (){
+
+		if(!avatarLife.isAlive)
+			return;
 		
 		LStick = new Vector2 (Input.GetAxis (LHorizontal), Input.GetAxis (LVertical));
 
@@ -52,10 +57,12 @@ public class PlayerController : MonoBehaviour {
 		}
 
 		float angle = Mathf.Atan2(Input.GetAxisRaw(RHorizontal), Input.GetAxisRaw(RVertical)) * Mathf.Rad2Deg;
+		print (Input.GetAxisRaw(RHorizontal) +" "+Input.GetAxisRaw(RVertical) + " or " + Input.GetAxis(RHorizontal) +" "+Input.GetAxis(RVertical));
 		if(Input.GetAxis(RHorizontal) != 0f || Input.GetAxis(RVertical) != 0f)
 			avatarMovement.RotateBy(angle);
 
 		avatarMovement.LStick = LStick;
+
 		if(!avatarMovement.isDashing && Input.GetButtonDown(Fire)){
 			avatarWeapon.Shoot();
 		}

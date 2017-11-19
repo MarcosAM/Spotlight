@@ -57,7 +57,6 @@ public class PlayerController : MonoBehaviour {
 		}
 
 		float angle = Mathf.Atan2(Input.GetAxisRaw(RHorizontal), Input.GetAxisRaw(RVertical)) * Mathf.Rad2Deg;
-		print (Input.GetAxisRaw(RHorizontal) +" "+Input.GetAxisRaw(RVertical) + " or " + Input.GetAxis(RHorizontal) +" "+Input.GetAxis(RVertical));
 		if(Input.GetAxis(RHorizontal) != 0f || Input.GetAxis(RVertical) != 0f)
 			avatarMovement.RotateBy(angle);
 

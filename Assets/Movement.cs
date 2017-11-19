@@ -23,6 +23,7 @@ public class Movement : MonoBehaviour {
 
 	float myAmmunition;
 
+	public float timeToComeBack;
 
 	void Start () {
 		DontDestroyOnLoad(gameObject);
@@ -31,6 +32,11 @@ public class Movement : MonoBehaviour {
 	
 	void Update ()
 	{
+		if(timeToComeBack < 0){
+			timeToComeBack += Time.deltaTime;
+			return;
+		}
+		
 		if (isDashing) {
 			GetComponent<BoxCollider2D>().isTrigger = true;
 			currentDashingDuration += Time.deltaTime;
@@ -54,7 +60,8 @@ public class Movement : MonoBehaviour {
 	}
 
 	void FixedUpdate (){
-		myRigidbody2D.velocity = moveVelocity;
+		if(timeToComeBack >= 0)
+			myRigidbody2D.velocity = moveVelocity;
 	}
 
 	void OnTriggerEnter2D(Collider2D c){
@@ -78,6 +85,10 @@ public class Movement : MonoBehaviour {
 
 	public void RotateBy (float angle){
 		transform.rotation = Quaternion.Euler(new Vector3(0,0,angle));
+	}
+
+	void OnCollisionEnter2D (){
+		timeToComeBack = -0.2f;
 	}
 }
 

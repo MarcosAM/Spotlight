@@ -12,6 +12,11 @@ public class Gun : MonoBehaviour {
 	public float rechargeTime;
 	public float timeToRecharge;
 
+	public float timeToCharge;
+	public float ChargeTime;
+
+	public int chargeLevel = 0;
+
 	void Start (){
 		myAvatar = GetComponentInParent<Avatar>();
 	}
@@ -25,6 +30,14 @@ public class Gun : MonoBehaviour {
 				timeToRecharge = rechargeTime;
 			}
 		}
+
+		if (myAvatar.myAvatarState == Glossary.AvatarStates.Charging && ammunition > 1+ chargeLevel && chargeLevel < 2) {
+			timeToCharge -= Time.deltaTime;
+			if(timeToCharge <= 0){
+				timeToCharge = ChargeTime;
+				chargeLevel++;
+			}
+		}
 	}
 
 	public void Shoot(){
@@ -33,6 +46,12 @@ public class Gun : MonoBehaviour {
 			Vector2 projectileDirection = -transform.up;
 			projectile.direction = projectileDirection.normalized;
 			projectile.weaponFiredMe = GetComponent<Weapon>();
+			if(chargeLevel==1){
+				projectile.transform.localScale = new Vector3(projectile.transform.localScale.x*3f,projectile.transform.localScale.y*3f,projectile.transform.localScale.z*3f);
+			}
+			if(chargeLevel==2){
+				projectile.transform.localScale = new Vector3(projectile.transform.localScale.x*5f,projectile.transform.localScale.y*5f,projectile.transform.localScale.z*5f);
+			}
 			ammunition --;
 		}
 	}

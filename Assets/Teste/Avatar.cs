@@ -19,9 +19,9 @@ public class Avatar : MonoBehaviour {
 
 	void Update ()
 	{
-		if (myAvatarState != Glossary.AvatarStates.Normal) {
+		if (myAvatarState == Glossary.AvatarStates.Dashing) {
 			timeToChangeBack -= Time.deltaTime;
-			if(timeToChangeBack <= 0 && myAvatarState == Glossary.AvatarStates.Dashing)
+			if(timeToChangeBack <= 0)
 				StopDash();
 		}
 	}
@@ -36,7 +36,7 @@ public class Avatar : MonoBehaviour {
 	}
 
 	public void LeftStick (Vector2 LStick){
-		if(myAvatarState == Glossary.AvatarStates.Normal)
+		if(myAvatarState == Glossary.AvatarStates.Normal || myAvatarState == Glossary.AvatarStates.Charging)
 			moveActions.Walk(LStick);
 	}
 
@@ -52,9 +52,14 @@ public class Avatar : MonoBehaviour {
 		}
 	}
 
-	public void FireBtnUp (){
-		if(myAvatarState== Glossary.AvatarStates.Charging)
+	public void FireBtnUp ()
+	{
+		if (myAvatarState == Glossary.AvatarStates.Charging) {
 			myGun.Shoot();
+			myGun.chargeLevel=0;
+			myGun.timeToCharge=myGun.ChargeTime;
+			myAvatarState=Glossary.AvatarStates.Normal;
+		}
 	}
 
 	public void DashBtnDown ()

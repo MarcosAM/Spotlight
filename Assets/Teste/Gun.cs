@@ -36,6 +36,7 @@ public class Gun : MonoBehaviour {
 			if(timeToCharge <= 0){
 				timeToCharge = ChargeTime;
 				chargeLevel++;
+				ammunition -= 2;
 			}
 		}
 	}
@@ -52,7 +53,8 @@ public class Gun : MonoBehaviour {
 			if(chargeLevel==2){
 				projectile.transform.localScale = new Vector3(projectile.transform.localScale.x*5f,projectile.transform.localScale.y*5f,projectile.transform.localScale.z*5f);
 			}
-			ammunition --;
+			if(chargeLevel==0)
+				ammunition --;
 		}
 	}
 }

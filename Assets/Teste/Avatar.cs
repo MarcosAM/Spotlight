@@ -29,9 +29,20 @@ public class Avatar : MonoBehaviour {
 	void OnTriggerEnter2D (Collider2D c)
 	{
 		if (c.GetComponent<Avatar> ()) {
-			if(GetComponent<Avatar>().myAvatarState == Glossary.AvatarStates.Normal){
+			if(c.GetComponent<Avatar>().myAvatarState == Glossary.AvatarStates.Normal){
 				Catch(c.GetComponentInChildren<Gun>(), c.GetComponent<MoveActions>());
-				}
+			}
+			if(c.GetComponent<Avatar>().myAvatarState == Glossary.AvatarStates.Charging){
+				Catch(c.GetComponentInChildren<Gun>(), c.GetComponent<MoveActions>());
+				c.GetComponent<Avatar> ().StopCharging ();
+			}
+		}
+	}
+
+	void OnCollisionEnter2D(Collision2D c){
+		if(c.gameObject.GetComponent<Avatar>() && myAvatarState == Glossary.AvatarStates.Assaulting){
+//			TODO
+//			CAUSAR DANO!!!
 		}
 	}
 
@@ -48,7 +59,7 @@ public class Avatar : MonoBehaviour {
 
 	public void FireBtnDown (){
 		if(myAvatarState==Glossary.AvatarStates.Normal){
-			myAvatarState=Glossary.AvatarStates.Charging;
+			StartCharging ();
 		}
 	}
 
@@ -56,9 +67,7 @@ public class Avatar : MonoBehaviour {
 	{
 		if (myAvatarState == Glossary.AvatarStates.Charging) {
 			myGun.Shoot();
-			myGun.chargeLevel=0;
-			myGun.timeToCharge=myGun.ChargeTime;
-			myAvatarState=Glossary.AvatarStates.Normal;
+			StopCharging ();
 		}
 	}
 
@@ -66,11 +75,13 @@ public class Avatar : MonoBehaviour {
 	{
 		if (myAvatarState == Glossary.AvatarStates.Normal && moveActions.dashesAvailable > 0)
 			StartDash();
+		StartAssaulting ();
 	}
 
 	public void DashBtnUp (){
 		if(myAvatarState == Glossary.AvatarStates.Dashing)
 			StopDash();
+		StopAssaulting ();
 	}
 
 	void StartDash(){
@@ -83,6 +94,32 @@ public class Avatar : MonoBehaviour {
 	void StopDash (){
 		myAvatarState = Glossary.AvatarStates.Normal;
 		myBoxCollider2D.isTrigger = false;
+	}
+
+	void StartCharging(){
+		myAvatarState=Glossary.AvatarStates.Charging;
+	}
+
+	public void StopCharging(){
+		if (myAvatarState == Glossary.AvatarStates.Charging) {
+			myGun.chargeLevel=0;
+			myGun.timeToCharge=myGun.ChargeTime;
+			myAvatarState=Glossary.AvatarStates.Normal;
+		}
+	}
+
+	void StartAssaulting(){
+		if(myAvatarState == Glossary.AvatarStates.Charging){
+			myAvatarState = Glossary.AvatarStates.Assaulting;
+			moveActions.Dash();
+		}
+	}
+
+	void StopAssaulting(){
+		if(myAvatarState == Glossary.AvatarStates.Assaulting){
+			myAvatarState = Glossary.AvatarStates.Normal;
+			StopCharging ();
+		}
 	}
 
 	void Catch (Gun theirGun, MoveActions theirMoveAction)

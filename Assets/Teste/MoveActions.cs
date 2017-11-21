@@ -12,7 +12,7 @@ public class MoveActions : MonoBehaviour {
 	public float timeToRecharge;
 
 	Avatar myAvatar;
-	Rigidbody2D myRigidbody2D;
+	public Rigidbody2D myRigidbody2D;
 	Vector2 velocity;
 
 	void Start(){

@@ -8,7 +8,7 @@ public class Gun : MonoBehaviour {
 	public Projectile projectilePrefab;
 
 	public int ammunition = 10;
-	int maxAmmunition = 10;
+	public int maxAmmunition = 10;
 	public float rechargeTime;
 	public float timeToRecharge;
 
@@ -46,7 +46,7 @@ public class Gun : MonoBehaviour {
 			Projectile projectile = Instantiate (projectilePrefab,transform.position,Quaternion.identity);
 			Vector2 projectileDirection = -transform.up;
 			projectile.direction = projectileDirection.normalized;
-			projectile.weaponFiredMe = GetComponent<Weapon>();
+			projectile.gunFiredMe = GetComponent<Gun>();
 			if(chargeLevel==1){
 				projectile.transform.localScale = new Vector3(projectile.transform.localScale.x*3f,projectile.transform.localScale.y*3f,projectile.transform.localScale.z*3f);
 			}

@@ -10,6 +10,8 @@ public class Avatar : MonoBehaviour {
 	BoxCollider2D myBoxCollider2D;
 
 	public float timeToChangeBack;
+	public float currentLife=5;
+	float maxLife=5;
 
 	void Start(){
 		moveActions = GetComponent<MoveActions>();
@@ -33,6 +35,12 @@ public class Avatar : MonoBehaviour {
 				myGun.timeToCharge=myGun.ChargeTime;
 			}
 		}
+
+		if(myAvatarState == Glossary.AvatarStates.Stunned){
+			timeToChangeBack -= Time.deltaTime;
+			if (timeToChangeBack <= 0)
+				StopStunned ();
+		}
 	}
 
 	void OnTriggerEnter2D (Collider2D c)
@@ -50,10 +58,9 @@ public class Avatar : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D c){
 		if(c.gameObject.GetComponent<Avatar>() && myAvatarState == Glossary.AvatarStates.Assaulting){
-//			TODO
-//			CAUSAR DANO!!!
-			print ("Charge!");
-			c.gameObject.GetComponent<MoveActions>().myRigidbody2D.velocity = moveActions.myRigidbody2D.velocity;
+			c.gameObject.GetComponent<Avatar> ().ReduceLifeBy (myGun.chargeLevel*2);
+			c.gameObject.GetComponent<Avatar> ().StartStunned ();
+			c.gameObject.GetComponent<MoveActions>().myRigidbody2D.AddForce(moveActions.myRigidbody2D.velocity*60);
 		}
 	}
 
@@ -115,6 +122,16 @@ public class Avatar : MonoBehaviour {
 		myAvatarState=Glossary.AvatarStates.Charging;
 	}
 
+	public void StartStunned(){
+		StopCharging ();
+		myAvatarState = Glossary.AvatarStates.Stunned;
+		timeToChangeBack = 0.5f;
+	}
+
+	public void StopStunned(){
+		myAvatarState = Glossary.AvatarStates.Normal;
+	}
+
 	public void StopCharging(){
 		if (myAvatarState == Glossary.AvatarStates.Charging) {
 			myGun.chargeLevel=0;
@@ -138,8 +155,7 @@ public class Avatar : MonoBehaviour {
 		}
 	}
 
-	void Catch (Gun theirGun, MoveActions theirMoveAction)
-	{
+	void Catch (Gun theirGun, MoveActions theirMoveAction){
 		int myAmmunition = myGun.ammunition;
 		int theirAmmunition = theirGun.ammunition;
 		myGun.ammunition = theirAmmunition;
@@ -149,5 +165,23 @@ public class Avatar : MonoBehaviour {
 			theirMoveAction.dashesAvailable--;
 			theirMoveAction.timeToRecharge = theirMoveAction.rechargeTime;
 		}
+	}
+
+	public void ReduceLifeBy(float damage){
+		currentLife -= damage;
+		StopCharging ();
+		if (currentLife <= 0)
+			Die ();
+	}
+
+	public void Die(){
+		gameObject.SetActive (false);
+	}
+
+	public void Refresh(){
+		currentLife = maxLife;
+		myGun.ammunition = myGun.maxAmmunition;
+		moveActions.dashesAvailable = 1;
+		myAvatarState = Glossary.AvatarStates.Normal;
 	}
 }

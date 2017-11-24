@@ -35,6 +35,8 @@ public class InputManager : MonoBehaviour {
 	void Update () {
 
 		if(BattleOn){
+			if (myAvatar.myAvatarState == Glossary.AvatarStates.Stunned)
+				return;
 			myAvatar.LeftStick(new Vector2 (Input.GetAxis (LHorizontal), Input.GetAxis (LVertical)));
 			myAvatar.RightStick (new Vector2 (Input.GetAxis (RHorizontal), Input.GetAxis (RVertical)));
 

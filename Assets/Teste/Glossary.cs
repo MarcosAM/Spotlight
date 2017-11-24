@@ -4,6 +4,6 @@ using UnityEngine;
 
 public struct Glossary {
 
-	public enum AvatarStates : short {Normal, Dashing, Charging, Assaulting};
+	public enum AvatarStates : short {Normal, Dashing, Charging, Assaulting, Stunned};
 
 }

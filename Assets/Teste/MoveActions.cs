@@ -13,7 +13,7 @@ public class MoveActions : MonoBehaviour {
 
 	Avatar myAvatar;
 	public Rigidbody2D myRigidbody2D;
-	Vector2 velocity;
+	public Vector2 velocity;
 
 	void Start(){
 		myRigidbody2D = GetComponent<Rigidbody2D>();
@@ -34,7 +34,8 @@ public class MoveActions : MonoBehaviour {
 	}
 
 	void FixedUpdate (){
-		myRigidbody2D.velocity = velocity;
+		if(myAvatar.myAvatarState != Glossary.AvatarStates.Stunned)
+			myRigidbody2D.velocity = velocity;
 	}
 
 	public void Walk (Vector2 direction){

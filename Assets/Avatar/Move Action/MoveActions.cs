@@ -42,8 +42,11 @@ public class MoveActions : MonoBehaviour {
 		velocity = direction*walkingSpeed;
 	}
 
-	public void Dash (){
-		velocity = velocity*2f;
-		dashesAvailable --;
+	public void Dash ()
+	{
+		if (dashesAvailable > 0) {
+			velocity = velocity*2f;
+			dashesAvailable --;
+		}
 	}
 }

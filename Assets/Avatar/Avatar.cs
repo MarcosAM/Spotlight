@@ -5,42 +5,20 @@ using UnityEngine;
 public class Avatar : MonoBehaviour {
 
 	MoveActions moveActions;
-	Gun myGun;
-	public Glossary.AvatarStates myAvatarState = Glossary.AvatarStates.Normal;
+	public Gun myGun;
 	BoxCollider2D myBoxCollider2D;
+	public Glossary.AvatarStates myAvatarState = Glossary.AvatarStates.Normal;
+	DashParticles dashParticles;
 
-	public float timeToChangeBack;
 	public float currentLife=5;
 	float maxLife=5;
+	public float stunDuration = 0.5f;
 
 	void Start(){
 		moveActions = GetComponent<MoveActions>();
 		myBoxCollider2D = GetComponent<BoxCollider2D>();
 		myGun = GetComponentInChildren<Gun>();
-	}
-
-	void Update ()
-	{
-		if (myAvatarState == Glossary.AvatarStates.Dashing) {
-			timeToChangeBack -= Time.deltaTime;
-			if(timeToChangeBack <= 0)
-				StopDash();
-		}
-
-		if (myAvatarState == Glossary.AvatarStates.Assaulting) {
-			timeToChangeBack -= Time.deltaTime;
-			if (timeToChangeBack <= 0) {
-				StopAssaulting ();
-				myGun.chargeLevel=0;
-				myGun.timeToCharge=myGun.ChargeTime;
-			}
-		}
-
-		if(myAvatarState == Glossary.AvatarStates.Stunned){
-			timeToChangeBack -= Time.deltaTime;
-			if (timeToChangeBack <= 0)
-				StopStunned ();
-		}
+		dashParticles = GetComponentInChildren<DashParticles>();
 	}
 
 	void OnTriggerEnter2D (Collider2D c)
@@ -59,7 +37,7 @@ public class Avatar : MonoBehaviour {
 	void OnCollisionEnter2D(Collision2D c){
 		if(c.gameObject.GetComponent<Avatar>() && myAvatarState == Glossary.AvatarStates.Assaulting){
 			c.gameObject.GetComponent<Avatar> ().ReduceLifeBy (myGun.chargeLevel*2);
-			c.gameObject.GetComponent<Avatar> ().StartStunned ();
+			c.gameObject.GetComponent<Avatar> ().StartCoroutine("StartStunned");
 			c.gameObject.GetComponent<MoveActions>().myRigidbody2D.AddForce(moveActions.myRigidbody2D.velocity*60);
 		}
 	}
@@ -67,6 +45,11 @@ public class Avatar : MonoBehaviour {
 	public void LeftStick (Vector2 LStick){
 		if(myAvatarState == Glossary.AvatarStates.Normal || myAvatarState == Glossary.AvatarStates.Charging)
 			moveActions.Walk(LStick);
+		if(myAvatarState != Glossary.AvatarStates.Dashing){
+			float angle2 = Mathf.Atan2(LStick.x, -LStick.y) * Mathf.Rad2Deg;
+			if(LStick.x != 0f || LStick.y != 0f)
+				dashParticles.transform.rotation = Quaternion.Euler(new Vector3(0,0,angle2));
+		}
 	}
 
 	public void RightStick (Vector2 RStick){
@@ -95,64 +78,80 @@ public class Avatar : MonoBehaviour {
 
 	public void DashBtnDown ()
 	{
-		if (myAvatarState == Glossary.AvatarStates.Normal && moveActions.dashesAvailable > 0)
-			StartDash();
-		StartAssaulting ();
+		StartCoroutine("StartDash");
+		StartCoroutine ("StartAssaulting");
 	}
 
 	public void DashBtnUp (){
-		if(myAvatarState == Glossary.AvatarStates.Dashing)
-			StopDash();
+		StopDash();
 		StopAssaulting ();
 	}
 
-	void StartDash(){
-		moveActions.Dash();
-		myAvatarState = Glossary.AvatarStates.Dashing;
-		timeToChangeBack = moveActions.dashDuration;
-		myBoxCollider2D.isTrigger = true;
+	IEnumerator StartDash ()
+	{
+		if (myAvatarState == Glossary.AvatarStates.Normal) {
+			moveActions.Dash();
+			myAvatarState = Glossary.AvatarStates.Dashing;
+			myBoxCollider2D.isTrigger = true;
+			dashParticles.StartDash();
+			yield return new WaitForSeconds(moveActions.dashDuration);
+		}
+		if(myAvatarState == Glossary.AvatarStates.Dashing){
+			StopDash();
+		}
 	}
 
 	void StopDash (){
-		myAvatarState = Glossary.AvatarStates.Normal;
-		myBoxCollider2D.isTrigger = false;
+		if(myAvatarState == Glossary.AvatarStates.Dashing){
+			myAvatarState = Glossary.AvatarStates.Normal;
+			myBoxCollider2D.isTrigger = false;
+			dashParticles.StopDash();
+			StopCoroutine("StartDash");
+		}
 	}
 
 	void StartCharging(){
 		myAvatarState=Glossary.AvatarStates.Charging;
-	}
-
-	public void StartStunned(){
-		StopCharging ();
-		myAvatarState = Glossary.AvatarStates.Stunned;
-		timeToChangeBack = 0.5f;
-	}
-
-	public void StopStunned(){
-		myAvatarState = Glossary.AvatarStates.Normal;
+		if(GetComponentInChildren<ParticleSystem>().isStopped)
+			GetComponentInChildren<ParticleSystem>().Play();
 	}
 
 	public void StopCharging(){
-		if (myAvatarState == Glossary.AvatarStates.Charging) {
+		if (myAvatarState == Glossary.AvatarStates.Charging || myAvatarState == Glossary.AvatarStates.Assaulting) {
 			myGun.chargeLevel=0;
 			myGun.timeToCharge=myGun.ChargeTime;
 			myAvatarState=Glossary.AvatarStates.Normal;
 		}
+		if(GetComponentInChildren<ParticleSystem>().isPlaying)
+			GetComponentInChildren<ParticleSystem>().Stop();
 	}
 
-	void StartAssaulting(){
+	IEnumerator StartAssaulting(){
 		if(myAvatarState == Glossary.AvatarStates.Charging){
 			myAvatarState = Glossary.AvatarStates.Assaulting;
 			moveActions.Dash();
-			timeToChangeBack = moveActions.dashDuration;
+			yield return new WaitForSecondsRealtime (moveActions.dashDuration);
 		}
+
+		if(myAvatarState == Glossary.AvatarStates.Assaulting)
+			StopAssaulting();
 	}
 
 	void StopAssaulting(){
 		if(myAvatarState == Glossary.AvatarStates.Assaulting){
-			myAvatarState = Glossary.AvatarStates.Normal;
 			StopCharging ();
+			StopCoroutine("StartAssaulting");
 		}
+	}
+
+	public IEnumerator StartStunned(){
+		if(myAvatarState != Glossary.AvatarStates.Stunned){
+			StopCharging ();
+			myAvatarState = Glossary.AvatarStates.Stunned;
+			yield return new WaitForSecondsRealtime(stunDuration);
+		}
+		if(myAvatarState == Glossary.AvatarStates.Stunned)
+			myAvatarState = Glossary.AvatarStates.Normal;
 	}
 
 	void Catch (Gun theirGun, MoveActions theirMoveAction){

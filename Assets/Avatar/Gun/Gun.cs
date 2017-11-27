@@ -6,10 +6,12 @@ public class Gun : MonoBehaviour {
 
 	Avatar myAvatar;
 	public Projectile projectilePrefab;
+	public ChargeParticles chargeParticles;
 
 	public int ammunition = 10;
 	public int maxAmmunition = 10;
-	public float rechargeTime;
+	public float currentRechargeTime;
+	public float standartRechargeTime;
 	public float timeToRecharge;
 
 	public float timeToCharge;
@@ -19,6 +21,7 @@ public class Gun : MonoBehaviour {
 
 	void Start (){
 		myAvatar = GetComponentInParent<Avatar>();
+		chargeParticles = GetComponentInChildren<ChargeParticles> ();
 	}
 
 	void Update ()
@@ -27,7 +30,7 @@ public class Gun : MonoBehaviour {
 			timeToRecharge -= Time.deltaTime;
 			if (timeToRecharge <= 0) {
 				ammunition++;
-				timeToRecharge = rechargeTime;
+				timeToRecharge = currentRechargeTime;
 			}
 		}
 
@@ -36,6 +39,7 @@ public class Gun : MonoBehaviour {
 			if(timeToCharge <= 0){
 				timeToCharge = ChargeTime;
 				chargeLevel++;
+				chargeParticles.ChargeUp (chargeLevel);
 				ammunition -= 2;
 			}
 		}
@@ -47,6 +51,7 @@ public class Gun : MonoBehaviour {
 			Vector2 projectileDirection = -transform.up;
 			projectile.direction = projectileDirection.normalized;
 			projectile.gunFiredMe = GetComponent<Gun>();
+			chargeParticles.ChargeDown ();
 			if(chargeLevel==1){
 				projectile.transform.localScale = new Vector3(projectile.transform.localScale.x*3f,projectile.transform.localScale.y*3f,projectile.transform.localScale.z*3f);
 			}

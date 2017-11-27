@@ -4,23 +4,24 @@ using UnityEngine;
 
 public class ChargeParticles : MonoBehaviour {
 
-	Gun gun;
-	ParticleSystem particles;
+	public ParticleSystem particles;
+	public bool isLevel2 = false;
 
 	void Start () {
-		gun = GetComponentInParent<Gun>();
 		particles = GetComponent<ParticleSystem>();
 	}
-	
-	void Update ()
-	{
-		if (particles.isPlaying) {
-			if (gun.chargeLevel == 1) {
-				transform.localScale = new Vector3(0.5f,0.5f,0.5f);
-			}
-			if (gun.chargeLevel == 2){
-				transform.localScale = new Vector3(0.8f,0.8f,0.8f);
-			}
+
+	public void ChargeUp(int chargeLevel){
+		if (chargeLevel == 1) {
+			particles.Play ();
 		}
+		if (chargeLevel == 2) {
+			transform.localScale = new Vector3(0.8f,0.8f,0.8f);
+		}
+	}
+
+	public void ChargeDown(){
+		particles.Stop ();
+		transform.localScale = new Vector3(0.5f,0.5f,0.5f);
 	}
 }

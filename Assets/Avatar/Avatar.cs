@@ -89,7 +89,7 @@ public class Avatar : MonoBehaviour {
 
 	IEnumerator StartDash ()
 	{
-		if (myAvatarState == Glossary.AvatarStates.Normal) {
+		if (myAvatarState == Glossary.AvatarStates.Normal && moveActions.dashesAvailable > 0) {
 			moveActions.Dash();
 			myAvatarState = Glossary.AvatarStates.Dashing;
 			myBoxCollider2D.isTrigger = true;
@@ -112,8 +112,6 @@ public class Avatar : MonoBehaviour {
 
 	void StartCharging(){
 		myAvatarState=Glossary.AvatarStates.Charging;
-		if(GetComponentInChildren<ParticleSystem>().isStopped)
-			GetComponentInChildren<ParticleSystem>().Play();
 	}
 
 	public void StopCharging(){
@@ -122,8 +120,6 @@ public class Avatar : MonoBehaviour {
 			myGun.timeToCharge=myGun.ChargeTime;
 			myAvatarState=Glossary.AvatarStates.Normal;
 		}
-		if(GetComponentInChildren<ParticleSystem>().isPlaying)
-			GetComponentInChildren<ParticleSystem>().Stop();
 	}
 
 	IEnumerator StartAssaulting(){

@@ -39,7 +39,7 @@ public class MoveActions : MonoBehaviour {
 	}
 
 	public void Walk (Vector2 direction){
-		velocity = direction*walkingSpeed;
+		velocity = direction.normalized*walkingSpeed;
 	}
 
 	public void Dash ()

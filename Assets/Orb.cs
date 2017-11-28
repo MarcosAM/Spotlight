@@ -10,26 +10,35 @@ public class Orb : MonoBehaviour {
 	public Avatar following;
 	public bool isFollowing = false;
 
+	void Start () {
+		rb2d = GetComponent<Rigidbody2D> ();
+		Release ();
+	}
+
 	void Update(){
 		if(isFollowing){
 			transform.position = following.transform.position;
 		}
 	}
 
-//	void Start () {
-//		rb2d = GetComponent<Rigidbody2D> ();
-//		Vector2 direction = new Vector2 (Random.Range (-2, 2), Random.Range (-2, 2));
-//		direction.Normalize ();
-//		rb2d.AddForce (direction*speed);
-//	}
-//
-//	void OnCollisionEnter2D(Collision2D c){
-//		Vector2 newVelocity = rb2d.velocity.normalized; 
-//		rb2d.velocity = newVelocity * speed*2;
-//	}
+	void OnCollisionEnter2D(Collision2D c){
+		Vector2 newVelocity = rb2d.velocity.normalized; 
+		rb2d.velocity = newVelocity * speed*2;
+	}
 
 	public void Follow (Avatar f){
 		following = f;
 		isFollowing = true;
+		GetComponent<CircleCollider2D> ().enabled = false;
+	}
+
+	public void Release (){
+		following = null;
+		isFollowing = false;
+		GetComponent<CircleCollider2D> ().enabled = true;
+
+		Vector2 direction = new Vector2 (Random.Range (-2, 2), Random.Range (-2, 2));
+		direction.Normalize ();
+		rb2d.AddForce (direction*speed);
 	}
 }

@@ -125,6 +125,7 @@ public class Avatar : MonoBehaviour {
 	IEnumerator StartAssaulting(){
 		if(myAvatarState == Glossary.AvatarStates.Charging){
 			myAvatarState = Glossary.AvatarStates.Assaulting;
+			myGun.chargeParticles.ChargeDown ();
 			moveActions.Dash();
 			yield return new WaitForSecondsRealtime (moveActions.dashDuration);
 		}

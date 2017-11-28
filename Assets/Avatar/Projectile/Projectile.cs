@@ -25,6 +25,5 @@ public class Projectile : MonoBehaviour {
 		if(c.GetComponentInChildren<Gun>() == gunFiredMe){
 			return;
 		}
-		Destroy(gameObject);
 	}
 }

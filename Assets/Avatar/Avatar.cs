@@ -4,14 +4,17 @@ using UnityEngine;
 
 public class Avatar : MonoBehaviour {
 
-	MoveActions moveActions;
+	public MoveActions moveActions;
 	public Gun myGun;
 	BoxCollider2D myBoxCollider2D;
 	public Glossary.AvatarStates myAvatarState = Glossary.AvatarStates.Normal;
 	DashParticles dashParticles;
+	AssaultParticles assaultParticles;
+
+	public Orb orb;
 
 	public float currentLife=5;
-	float maxLife=5;
+	public float maxLife=5;
 	public float stunDuration = 0.5f;
 
 	void Start(){
@@ -19,18 +22,23 @@ public class Avatar : MonoBehaviour {
 		myBoxCollider2D = GetComponent<BoxCollider2D>();
 		myGun = GetComponentInChildren<Gun>();
 		dashParticles = GetComponentInChildren<DashParticles>();
+		assaultParticles = GetComponentInChildren<AssaultParticles>();
 	}
 
 	void OnTriggerEnter2D (Collider2D c)
 	{
 		if (c.GetComponent<Avatar> ()) {
 			if(c.GetComponent<Avatar>().myAvatarState == Glossary.AvatarStates.Normal){
-				Catch(c.GetComponentInChildren<Gun>(), c.GetComponent<MoveActions>());
+				StealAndSwitch(c.GetComponentInChildren<Avatar>());
 			}
 			if(c.GetComponent<Avatar>().myAvatarState == Glossary.AvatarStates.Charging){
-				Catch(c.GetComponentInChildren<Gun>(), c.GetComponent<MoveActions>());
+				StealAndSwitch(c.GetComponentInChildren<Avatar>());
 				c.GetComponent<Avatar> ().StopCharging ();
 			}
+		}
+
+		if(c.GetComponent<Catchable>() && !c.GetComponent<Catchable>().orb.isFollowing && myAvatarState == Glossary.AvatarStates.Dashing){
+			CatchOrSwitch(c.GetComponent<Catchable>().orb);
 		}
 	}
 
@@ -49,6 +57,11 @@ public class Avatar : MonoBehaviour {
 			float angle2 = Mathf.Atan2(LStick.x, -LStick.y) * Mathf.Rad2Deg;
 			if(LStick.x != 0f || LStick.y != 0f)
 				dashParticles.transform.rotation = Quaternion.Euler(new Vector3(0,0,angle2));
+		}
+		if(myAvatarState != Glossary.AvatarStates.Assaulting){
+			float angle3 = Mathf.Atan2(LStick.y,-LStick.x) * Mathf.Rad2Deg;
+			if(LStick.x != 0f || LStick.y != 0f)
+				assaultParticles.transform.rotation = Quaternion.Euler(new Vector3(angle3,90,0));
 		}
 	}
 
@@ -127,6 +140,7 @@ public class Avatar : MonoBehaviour {
 			myAvatarState = Glossary.AvatarStates.Assaulting;
 			myGun.chargeParticles.ChargeDown ();
 			moveActions.Dash();
+			assaultParticles.StartAssault();
 			yield return new WaitForSecondsRealtime (moveActions.dashDuration);
 		}
 
@@ -136,6 +150,7 @@ public class Avatar : MonoBehaviour {
 
 	void StopAssaulting(){
 		if(myAvatarState == Glossary.AvatarStates.Assaulting){
+			assaultParticles.StopAssault();
 			StopCharging ();
 			StopCoroutine("StartAssaulting");
 		}
@@ -151,15 +166,59 @@ public class Avatar : MonoBehaviour {
 			myAvatarState = Glossary.AvatarStates.Normal;
 	}
 
-	void Catch (Gun theirGun, MoveActions theirMoveAction){
-		int myAmmunition = myGun.ammunition;
-		int theirAmmunition = theirGun.ammunition;
-		myGun.ammunition = theirAmmunition;
-		theirGun.ammunition = myAmmunition;
+	public IEnumerator StartStunned(float duration){
+		if(myAvatarState != Glossary.AvatarStates.Stunned){
+			StopCharging ();
+			myAvatarState = Glossary.AvatarStates.Stunned;
+			yield return new WaitForSecondsRealtime(duration);
+		}
+		if(myAvatarState == Glossary.AvatarStates.Stunned)
+			myAvatarState = Glossary.AvatarStates.Normal;
+	}
+
+	void StealAndSwitch (Avatar theirAvatar)
+	{
+		myGun.ammunition += 5;
+		if (myGun.ammunition > myGun.maxAmmunition) {
+			myGun.ammunition = myGun.maxAmmunition;
+		}
+		theirAvatar.myGun.ammunition -= 5;
+		if (theirAvatar.myGun.ammunition < 0) {
+			theirAvatar.myGun.ammunition = 0;
+		}
 		moveActions.dashesAvailable++;
-		if (theirMoveAction.dashesAvailable > 0) {
-			theirMoveAction.dashesAvailable--;
-			theirMoveAction.timeToRecharge = theirMoveAction.rechargeTime;
+		if (theirAvatar.moveActions.dashesAvailable > 0) {
+			theirAvatar.moveActions.dashesAvailable--;
+			theirAvatar.moveActions.timeToRecharge = theirAvatar.moveActions.rechargeTime;
+		}
+		theirAvatar.StartStunned (0.3f);
+
+		Orb theirOrb;
+		Orb myOrb;
+		theirOrb = theirAvatar.orb;
+		myOrb = orb;
+		if (theirOrb != null || myOrb != null) {
+			orb = theirOrb;
+			theirAvatar.orb = myOrb;
+			if (orb != null) {
+				orb.Follow (GetComponent<Avatar> ());
+			}
+			if (theirAvatar.orb != null) {
+				theirAvatar.orb.Follow(theirAvatar);
+			}
+		}
+	}
+
+	void CatchOrSwitch (Orb otherOrb)
+	{
+		if(orb != null){
+			orb.Release();
+			orb = otherOrb;
+			orb.Follow(GetComponent<Avatar>());
+		}
+		else {
+			orb = otherOrb;
+			otherOrb.Follow(GetComponent<Avatar>());
 		}
 	}
 
@@ -172,6 +231,8 @@ public class Avatar : MonoBehaviour {
 
 	public void Die(){
 		gameObject.SetActive (false);
+		orb.Release();
+		orb = null;
 	}
 
 	public void Refresh(){

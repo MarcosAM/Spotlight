@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class Gun : MonoBehaviour {
 
-	Avatar myAvatar;
+	public Avatar myAvatar;
 	public Projectile projectilePrefab;
 	public ChargeParticles chargeParticles;
 
-	public int ammunition = 10;
-	public int maxAmmunition = 10;
+	public float ammunition = 10;
+	public float maxAmmunition = 10;
 	public float currentRechargeTime;
 	public float standartRechargeTime;
 	public float timeToRecharge;
@@ -18,6 +18,8 @@ public class Gun : MonoBehaviour {
 	public float ChargeTime;
 
 	public int chargeLevel = 0;
+
+	public bool isSizeZone = false;
 
 	void Start (){
 		myAvatar = GetComponentInParent<Avatar>();
@@ -45,21 +47,31 @@ public class Gun : MonoBehaviour {
 		}
 	}
 
-	public void Shoot(){
-		if(ammunition > 0){
-			Projectile projectile = Instantiate (projectilePrefab,transform.position,Quaternion.identity);
+	public void Shoot ()
+	{
+		if (ammunition > 0) {
+			Projectile projectile = Instantiate (projectilePrefab, transform.position, Quaternion.identity);
 			Vector2 projectileDirection = -transform.up;
 			projectile.direction = projectileDirection.normalized;
-			projectile.gunFiredMe = GetComponent<Gun>();
+			projectile.gunFiredMe = GetComponent<Gun> ();
 			chargeParticles.ChargeDown ();
-			if(chargeLevel==1){
-				projectile.transform.localScale = new Vector3(projectile.transform.localScale.x*3f,projectile.transform.localScale.y*3f,projectile.transform.localScale.z*3f);
+			if (chargeLevel == 1) {
+				if(isSizeZone)
+					projectile.transform.localScale = new Vector3 (projectile.transform.localScale.x * 4.5f, projectile.transform.localScale.y * 4.5f, projectile.transform.localScale.z * 4.5f);
+				else
+					projectile.transform.localScale = new Vector3 (projectile.transform.localScale.x * 3f, projectile.transform.localScale.y * 3f, projectile.transform.localScale.z * 3f);
 			}
-			if(chargeLevel==2){
-				projectile.transform.localScale = new Vector3(projectile.transform.localScale.x*5f,projectile.transform.localScale.y*5f,projectile.transform.localScale.z*5f);
+			if (chargeLevel == 2) {
+				if(isSizeZone)
+					projectile.transform.localScale = new Vector3 (projectile.transform.localScale.x * 7f, projectile.transform.localScale.y * 7f, projectile.transform.localScale.z * 7f);
+				else
+					projectile.transform.localScale = new Vector3 (projectile.transform.localScale.x * 5f, projectile.transform.localScale.y * 5f, projectile.transform.localScale.z * 5f);
 			}
-			if(chargeLevel==0)
+			if (chargeLevel == 0) {
 				ammunition --;
+				if(isSizeZone)
+					projectile.transform.localScale = new Vector3 (projectile.transform.localScale.x * 3f, projectile.transform.localScale.y * 3f, projectile.transform.localScale.z * 3f);
+			}
 		}
 	}
 }

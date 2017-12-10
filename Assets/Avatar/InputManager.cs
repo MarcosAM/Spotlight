@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour {
 
-	public bool BattleOn;
+	[HideInInspector]public bool isControllingAvatar=true;
 	public GameObject gameObjectAvatar;
 	[HideInInspector]public Avatar myAvatar;
 
@@ -30,11 +30,12 @@ public class InputManager : MonoBehaviour {
 		Dash = "Dash_P"+number;
 		#endregion
 		myAvatar = gameObjectAvatar.GetComponent<Avatar>();
+		myAvatar.inputManager = this;
 	}
 	
 	void Update () {
 
-		if(BattleOn){
+		if(isControllingAvatar){
 			if (myAvatar.myAvatarState == Glossary.AvatarStates.Stunned)
 				return;
 			myAvatar.LeftStick(new Vector2 (Input.GetAxis (LHorizontal), Input.GetAxis (LVertical)));

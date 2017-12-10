@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class Avatar : MonoBehaviour {
 
-	public MoveActions moveActions;
-	public Gun myGun;
+	[HideInInspector]public InputManager inputManager;
+	[HideInInspector]public MoveActions moveActions;
+	[HideInInspector]public Gun myGun;
 	BoxCollider2D myBoxCollider2D;
 	public Glossary.AvatarStates myAvatarState = Glossary.AvatarStates.Normal;
 	DashParticles dashParticles;
 	AssaultParticles assaultParticles;
+	[HideInInspector]public SpriteRenderer spriteRenderer;
 
 	public Orb orb;
 
@@ -17,12 +19,17 @@ public class Avatar : MonoBehaviour {
 	public float maxLife=5;
 	public float stunDuration = 0.5f;
 
+	public int victoryPoints=0;
+	public int myWorth=1;
+	public int position=4;
+
 	void Start(){
 		moveActions = GetComponent<MoveActions>();
 		myBoxCollider2D = GetComponent<BoxCollider2D>();
 		myGun = GetComponentInChildren<Gun>();
 		dashParticles = GetComponentInChildren<DashParticles>();
 		assaultParticles = GetComponentInChildren<AssaultParticles>();
+		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 	}
 
 	void OnTriggerEnter2D (Collider2D c)
@@ -44,7 +51,7 @@ public class Avatar : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D c){
 		if(c.gameObject.GetComponent<Avatar>() && myAvatarState == Glossary.AvatarStates.Assaulting){
-			c.gameObject.GetComponent<Avatar> ().ReduceLifeBy (myGun.chargeLevel*2);
+			c.gameObject.GetComponent<Avatar> ().ReduceLifeBy (myGun.chargeLevel*2,GetComponent<Avatar>());
 			c.gameObject.GetComponent<Avatar> ().StartCoroutine("StartStunned");
 			c.gameObject.GetComponent<MoveActions>().myRigidbody2D.AddForce(moveActions.myRigidbody2D.velocity*60);
 		}
@@ -222,23 +229,40 @@ public class Avatar : MonoBehaviour {
 		}
 	}
 
-	public void ReduceLifeBy(float damage){
+	public void ReduceLifeBy (float damage, Avatar enemy)
+	{
 		currentLife -= damage;
 		StopCharging ();
-		if (currentLife <= 0)
-			Die ();
+		if (currentLife <= 0) {
+			enemy.victoryPoints += myWorth;
+			StartCoroutine("Die");
+		}
 	}
 
-	public void Die(){
-		gameObject.SetActive (false);
-		orb.Release();
-		orb = null;
+	public IEnumerator Die ()
+	{
+		if (orb != null) {
+			orb.Release();
+			orb = null;
+		}
+		FindObjectOfType<ScoreKeeper>().RefreshPlayersWorth();
+		Refresh();
+		transform.position = new Vector3(300,300,transform.position.z);
+		inputManager.isControllingAvatar = false;
+		yield return new WaitForSecondsRealtime(5);
+		inputManager.isControllingAvatar = true;
+		transform.position = new Vector3 (0,0,transform.position.z);
 	}
 
 	public void Refresh(){
 		currentLife = maxLife;
 		myGun.ammunition = myGun.maxAmmunition;
+		myGun.timeToCharge = myGun.ChargeTime;
+		myGun.timeToRecharge = myGun.standartRechargeTime;
+		myGun.chargeLevel = 0;
+		myGun.isSizeZone = false;
 		moveActions.dashesAvailable = 1;
+		moveActions.timeToRecharge = moveActions.rechargeTime;
 		myAvatarState = Glossary.AvatarStates.Normal;
 	}
 }

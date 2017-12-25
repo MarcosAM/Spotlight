@@ -23,7 +23,7 @@ public class Projectile : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D (Collider2D c){
-		if(c.GetComponent<Avatar>() && c.GetComponentInChildren<Gun>() != gunFiredMe && c.GetComponent<Avatar>().myAvatarState != Glossary.AvatarStates.Dashing && c.GetComponent<Avatar>().myAvatarState != Glossary.AvatarStates.Assaulting){
+		if(c.GetComponent<Avatar>() && c.GetComponentInChildren<Gun>() != gunFiredMe && c.GetComponent<Avatar>().state != Glossary.AvatarStates.Dashing && c.GetComponent<Avatar>().state != Glossary.AvatarStates.Assaulting){
 			c.GetComponent<Avatar> ().ReduceLifeBy (damage,gunFiredMe.myAvatar);
 			Destroy(gameObject);
 			return;

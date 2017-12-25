@@ -8,7 +8,7 @@ public class Avatar : MonoBehaviour {
 	[HideInInspector]public MoveActions moveActions;
 	[HideInInspector]public Gun myGun;
 	BoxCollider2D myBoxCollider2D;
-	[HideInInspector]public Glossary.AvatarStates myAvatarState = Glossary.AvatarStates.Normal;
+	[HideInInspector]public Glossary.AvatarStates state = Glossary.AvatarStates.Normal;
 	DashParticles dashParticles;
 	AssaultParticles assaultParticles;
 	[HideInInspector]public SpriteRenderer spriteRenderer;
@@ -35,155 +35,79 @@ public class Avatar : MonoBehaviour {
 	void OnTriggerEnter2D (Collider2D c)
 	{
 		if(c.GetComponent<Wall>()){
-			StopDash();
+			moveActions.StopDash();
 		}
 		if (c.GetComponent<Avatar> ()) {
-			if(c.GetComponent<Avatar>().myAvatarState == Glossary.AvatarStates.Normal){
+			if(c.GetComponent<Avatar>().state == Glossary.AvatarStates.Normal){
 				StealAndSwitch(c.GetComponentInChildren<Avatar>());
 			}
-			if(c.GetComponent<Avatar>().myAvatarState == Glossary.AvatarStates.Charging){
+			if(c.GetComponent<Avatar>().state == Glossary.AvatarStates.Charging){
 				StealAndSwitch(c.GetComponentInChildren<Avatar>());
 				c.GetComponent<Avatar> ().StopCharging ();
 			}
 		}
 
-		if(c.GetComponent<Catchable>() && !c.GetComponent<Catchable>().orb.isFollowing && myAvatarState == Glossary.AvatarStates.Dashing){
+		if(c.GetComponent<Catchable>() && !c.GetComponent<Catchable>().orb.isFollowing && state == Glossary.AvatarStates.Dashing){
 			CatchOrSwitch(c.GetComponent<Catchable>().orb);
 		}
 	}
 
 	void OnCollisionEnter2D(Collision2D c){
-		if(c.gameObject.GetComponent<Avatar>() && myAvatarState == Glossary.AvatarStates.Assaulting){
+		if(c.gameObject.GetComponent<Avatar>() && state == Glossary.AvatarStates.Assaulting){
 			c.gameObject.GetComponent<Avatar> ().ReduceLifeBy (6,GetComponent<Avatar>());
 			c.gameObject.GetComponent<Avatar> ().StartCoroutine("StartStunned");
-			c.gameObject.GetComponent<MoveActions>().myRigidbody2D.AddForce(moveActions.myRigidbody2D.velocity*60);
+			c.gameObject.GetComponent<MoveActions>().rigidBody2D.AddForce(moveActions.rigidBody2D.velocity*60);
 		}
-	}
-
-	public void LeftStick (Vector2 LStick){
-		if(myAvatarState == Glossary.AvatarStates.Normal || myAvatarState == Glossary.AvatarStates.Charging)
-			moveActions.Walk(LStick);
-		if(myAvatarState != Glossary.AvatarStates.Dashing){
-			float angle2 = Mathf.Atan2(LStick.x, -LStick.y) * Mathf.Rad2Deg;
-			if(LStick.x != 0f || LStick.y != 0f)
-				dashParticles.transform.rotation = Quaternion.Euler(new Vector3(0,0,angle2));
-		}
-		if(myAvatarState != Glossary.AvatarStates.Assaulting){
-			float angle3 = Mathf.Atan2(LStick.y,-LStick.x) * Mathf.Rad2Deg;
-			if(LStick.x != 0f || LStick.y != 0f)
-				assaultParticles.transform.rotation = Quaternion.Euler(new Vector3(angle3,90,0));
-		}
-	}
-
-	public void RightStick (Vector2 RStick){
-		float angle = Mathf.Atan2(RStick.x, RStick.y) * Mathf.Rad2Deg;
-		if(RStick.x != 0f || RStick.y != 0f)
-			transform.rotation = Quaternion.Euler(new Vector3(0,0,angle));
 	}
 
 	public void FireBtnDown (){
-		if(myAvatarState==Glossary.AvatarStates.Normal){
+		if(state==Glossary.AvatarStates.Normal){
 			StartCharging ();
 		}
 	}
 
 	public void FireBtnUp ()
 	{
-		if(myAvatarState == Glossary.AvatarStates.Normal){
+		if(state == Glossary.AvatarStates.Normal){
 			StopCharging ();
 		}
 
-		if(myAvatarState == Glossary.AvatarStates.Charging){
+		if(state == Glossary.AvatarStates.Charging){
 			myGun.Shoot();
 			StopCharging ();
 		}
 	}
 
-	public void DashBtnDown ()
-	{
-		StartCoroutine("StartDash");
-		StartCoroutine ("StartAssaulting");
-	}
-
-	public void DashBtnUp (){
-		StopDash();
-		StopAssaulting ();
-	}
-
-	IEnumerator StartDash ()
-	{
-		if (myAvatarState == Glossary.AvatarStates.Normal && moveActions.dashesAvailable > 0) {
-			moveActions.Dash();
-			myAvatarState = Glossary.AvatarStates.Dashing;
-			myBoxCollider2D.isTrigger = true;
-			dashParticles.StartDash();
-			yield return new WaitForSeconds(moveActions.dashDuration);
-		}
-		if(myAvatarState == Glossary.AvatarStates.Dashing){
-			StopDash();
-		}
-	}
-
-	void StopDash (){
-		if(myAvatarState == Glossary.AvatarStates.Dashing){
-			myAvatarState = Glossary.AvatarStates.Normal;
-			myBoxCollider2D.isTrigger = false;
-			dashParticles.StopDash();
-			StopCoroutine("StartDash");
-		}
-	}
-
 	void StartCharging(){
-		myAvatarState=Glossary.AvatarStates.Charging;
+		state=Glossary.AvatarStates.Charging;
 	}
 
 	public void StopCharging(){
-		if (myAvatarState == Glossary.AvatarStates.Charging || myAvatarState == Glossary.AvatarStates.Assaulting) {
+		if (state == Glossary.AvatarStates.Charging || state == Glossary.AvatarStates.Assaulting) {
 			myGun.chargeLevel=0;
 			myGun.timeToCharge=myGun.ChargeTime;
-			myAvatarState=Glossary.AvatarStates.Normal;
-		}
-	}
-
-	IEnumerator StartAssaulting(){
-		if(myAvatarState == Glossary.AvatarStates.Charging){
-			myAvatarState = Glossary.AvatarStates.Assaulting;
-			myGun.chargeParticles.ChargeDown ();
-			moveActions.Dash();
-			assaultParticles.StartAssault();
-			yield return new WaitForSecondsRealtime (moveActions.dashDuration);
-		}
-
-		if(myAvatarState == Glossary.AvatarStates.Assaulting)
-			StopAssaulting();
-	}
-
-	void StopAssaulting(){
-		if(myAvatarState == Glossary.AvatarStates.Assaulting){
-			assaultParticles.StopAssault();
-			StopCharging ();
-			StopCoroutine("StartAssaulting");
+			state=Glossary.AvatarStates.Normal;
 		}
 	}
 
 	public IEnumerator StartStunned(){
-		if(myAvatarState != Glossary.AvatarStates.Stunned){
+		if(state != Glossary.AvatarStates.Stunned){
 			StopCharging ();
-			myAvatarState = Glossary.AvatarStates.Stunned;
+			state = Glossary.AvatarStates.Stunned;
 			yield return new WaitForSecondsRealtime(stunDuration);
 		}
-		if(myAvatarState == Glossary.AvatarStates.Stunned)
-			myAvatarState = Glossary.AvatarStates.Normal;
+		if(state == Glossary.AvatarStates.Stunned)
+			state = Glossary.AvatarStates.Normal;
 	}
 
 	public IEnumerator StartStunned(float duration){
-		if(myAvatarState != Glossary.AvatarStates.Stunned){
+		if(state != Glossary.AvatarStates.Stunned){
 			StopCharging ();
-			myAvatarState = Glossary.AvatarStates.Stunned;
+			state = Glossary.AvatarStates.Stunned;
 			yield return new WaitForSecondsRealtime(duration);
 		}
-		if(myAvatarState == Glossary.AvatarStates.Stunned)
-			myAvatarState = Glossary.AvatarStates.Normal;
+		if(state == Glossary.AvatarStates.Stunned)
+			state = Glossary.AvatarStates.Normal;
 	}
 
 	void StealAndSwitch (Avatar theirAvatar)
@@ -196,9 +120,9 @@ public class Avatar : MonoBehaviour {
 		if (theirAvatar.myGun.ammunition < 0) {
 			theirAvatar.myGun.ammunition = 0;
 		}
-		moveActions.dashesAvailable++;
-		if (theirAvatar.moveActions.dashesAvailable > 0) {
-			theirAvatar.moveActions.dashesAvailable--;
+		moveActions.canDash = true;
+		if (theirAvatar.moveActions.canDash) {
+			theirAvatar.moveActions.canDash = false;
 			theirAvatar.moveActions.timeToRecharge = theirAvatar.moveActions.rechargeTime;
 		}
 		theirAvatar.StartStunned (0.3f);
@@ -274,8 +198,8 @@ public class Avatar : MonoBehaviour {
 		myGun.timeToRecharge = myGun.standartRechargeTime;
 		myGun.chargeLevel = 0;
 		myGun.isSizeZone = false;
-		moveActions.dashesAvailable = 1;
+		moveActions.canDash = true;
 		moveActions.timeToRecharge = moveActions.rechargeTime;
-		myAvatarState = Glossary.AvatarStates.Normal;
+		state = Glossary.AvatarStates.Normal;
 	}
 }

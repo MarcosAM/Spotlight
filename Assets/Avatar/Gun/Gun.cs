@@ -28,7 +28,7 @@ public class Gun : MonoBehaviour {
 
 	void Update ()
 	{
-		if (myAvatar.myAvatarState == Glossary.AvatarStates.Normal && ammunition < maxAmmunition) {
+		if (myAvatar.state == Glossary.AvatarStates.Normal && ammunition < maxAmmunition) {
 			timeToRecharge -= Time.deltaTime;
 			if (timeToRecharge <= 0) {
 				ammunition++;
@@ -36,7 +36,7 @@ public class Gun : MonoBehaviour {
 			}
 		}
 
-		if (myAvatar.myAvatarState == Glossary.AvatarStates.Charging && ammunition > 1+ chargeLevel && chargeLevel < 2) {
+		if (myAvatar.state == Glossary.AvatarStates.Charging && ammunition > 1+ chargeLevel && chargeLevel < 2) {
 			timeToCharge -= Time.deltaTime;
 			if(timeToCharge <= 0){
 				timeToCharge = ChargeTime;

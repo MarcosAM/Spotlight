@@ -19,4 +19,11 @@ public class AssaultParticles : MonoBehaviour {
 	public void StopAssault(){
 		particle.Stop();
 	}
+
+	public void LookAt (Vector2 direction){
+		float angle3 = Mathf.Atan2 (direction.y, -direction.x) * Mathf.Rad2Deg;
+		if (direction.x != 0f || direction.y != 0f) {
+			transform.rotation = Quaternion.Euler(new Vector3(angle3,90,0));
+		}
+	}
 }

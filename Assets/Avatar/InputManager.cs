@@ -6,7 +6,7 @@ public class InputManager : MonoBehaviour {
 
 	[HideInInspector]public bool isControllingAvatar=true;
 	public GameObject gameObjectAvatar;
-	[HideInInspector]public Avatar myAvatar;
+	[HideInInspector]public Avatar avatar;
 
 //	DEFINIÇÂO DO CONTROLE - pt.1
 	public int number;
@@ -29,26 +29,23 @@ public class InputManager : MonoBehaviour {
 		Fire = "Fire_P"+number;
 		Dash = "Dash_P"+number;
 		#endregion
-		myAvatar = gameObjectAvatar.GetComponent<Avatar>();
-		myAvatar.inputManager = this;
+		avatar = gameObjectAvatar.GetComponent<Avatar>();
+		avatar.inputManager = this;
 	}
 	
 	void Update () {
-
 		if(isControllingAvatar){
-			if (myAvatar.myAvatarState == Glossary.AvatarStates.Stunned)
+			if (avatar.state == Glossary.AvatarStates.Stunned)
 				return;
-			myAvatar.LeftStick(new Vector2 (Input.GetAxis (LHorizontal), Input.GetAxis (LVertical)));
-			myAvatar.RightStick (new Vector2 (Input.GetAxis (RHorizontal), Input.GetAxis (RVertical)));
-
+			avatar.moveActions.RunOrAim(new Vector2 (Input.GetAxis (LHorizontal), Input.GetAxis (LVertical)),new Vector2 (Input.GetAxis (RHorizontal), Input.GetAxis (RVertical)));
 			if(Input.GetButtonDown(Fire))
-				myAvatar.FireBtnDown();
+				avatar.FireBtnDown();
 			if(Input.GetButtonUp(Fire))
-				myAvatar.FireBtnUp();
+				avatar.FireBtnUp();
 			if(Input.GetButtonDown(Dash))
-				myAvatar.DashBtnDown();
+				avatar.moveActions.StartCoroutine("DashBtnDown");
 			if(Input.GetButtonUp(Dash))
-				myAvatar.DashBtnUp();
+				avatar.moveActions.DashBtnUp();
 		}
 	}
 }

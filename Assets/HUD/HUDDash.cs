@@ -15,7 +15,7 @@ public class HUDDash : MonoBehaviour {
 	
 	void Update ()
 	{
-		if (avatar.moveActions.dashesAvailable > 0) {
+		if (avatar.moveActions.canDash) {
 			transform.localScale = size;
 		} else {
 			transform.localScale = Vector3.zero;

@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class Gun : MonoBehaviour {
 
-	public Avatar myAvatar;
+	[HideInInspector]public Avatar myAvatar;
 	public Projectile projectilePrefab;
 	public ChargeParticles chargeParticles;
 
-	public float ammunition = 10;
-	public float maxAmmunition = 10;
-	public float currentRechargeTime;
+	[HideInInspector]public float ammunition = 10;
+	[HideInInspector]public float maxAmmunition = 10;
+	[HideInInspector]public float currentRechargeTime;
 	public float standartRechargeTime;
 	public float timeToRecharge;
 

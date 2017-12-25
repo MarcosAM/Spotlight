@@ -8,20 +8,20 @@ public class Avatar : MonoBehaviour {
 	[HideInInspector]public MoveActions moveActions;
 	[HideInInspector]public Gun myGun;
 	BoxCollider2D myBoxCollider2D;
-	public Glossary.AvatarStates myAvatarState = Glossary.AvatarStates.Normal;
+	[HideInInspector]public Glossary.AvatarStates myAvatarState = Glossary.AvatarStates.Normal;
 	DashParticles dashParticles;
 	AssaultParticles assaultParticles;
 	[HideInInspector]public SpriteRenderer spriteRenderer;
 
-	public Orb orb;
+	[HideInInspector]public Orb orb;
 
 	public float currentLife=5;
 	public float maxLife=5;
 	public float stunDuration = 0.5f;
 
-	public int victoryPoints=0;
-	public int myWorth=1;
-	public int position=4;
+	[HideInInspector]public int victoryPoints=0;
+	[HideInInspector]public int myWorth=1;
+	[HideInInspector]public int position=4;
 
 	void Start(){
 		moveActions = GetComponent<MoveActions>();
@@ -34,6 +34,9 @@ public class Avatar : MonoBehaviour {
 
 	void OnTriggerEnter2D (Collider2D c)
 	{
+		if(c.GetComponent<Wall>()){
+			StopDash();
+		}
 		if (c.GetComponent<Avatar> ()) {
 			if(c.GetComponent<Avatar>().myAvatarState == Glossary.AvatarStates.Normal){
 				StealAndSwitch(c.GetComponentInChildren<Avatar>());
@@ -51,7 +54,7 @@ public class Avatar : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D c){
 		if(c.gameObject.GetComponent<Avatar>() && myAvatarState == Glossary.AvatarStates.Assaulting){
-			c.gameObject.GetComponent<Avatar> ().ReduceLifeBy (myGun.chargeLevel*2,GetComponent<Avatar>());
+			c.gameObject.GetComponent<Avatar> ().ReduceLifeBy (6,GetComponent<Avatar>());
 			c.gameObject.GetComponent<Avatar> ().StartCoroutine("StartStunned");
 			c.gameObject.GetComponent<MoveActions>().myRigidbody2D.AddForce(moveActions.myRigidbody2D.velocity*60);
 		}
@@ -229,6 +232,13 @@ public class Avatar : MonoBehaviour {
 		}
 	}
 
+	public IEnumerator Heal (){
+		while(currentLife < maxLife){
+			currentLife ++;
+			yield return new WaitForSecondsRealtime(1f);
+		}
+	}
+
 	public void ReduceLifeBy (float damage, Avatar enemy)
 	{
 		currentLife -= damage;
@@ -251,7 +261,10 @@ public class Avatar : MonoBehaviour {
 		inputManager.isControllingAvatar = false;
 		yield return new WaitForSecondsRealtime(5);
 		inputManager.isControllingAvatar = true;
-		transform.position = new Vector3 (0,0,transform.position.z);
+		SpawnPoint[] spawnPoints = FindObjectsOfType<SpawnPoint>();
+		int n = spawnPoints.Length;
+		int r = Random.Range(0,n);
+		transform.position = spawnPoints[r].gameObject.transform.position;
 	}
 
 	public void Refresh(){

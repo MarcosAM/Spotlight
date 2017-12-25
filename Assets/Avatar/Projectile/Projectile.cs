@@ -31,5 +31,8 @@ public class Projectile : MonoBehaviour {
 		if(c.GetComponentInChildren<Gun>() == gunFiredMe){
 			return;
 		}
+		if(c.GetComponent<Obstacle>()){
+			Destroy(gameObject);
+		}
 	}
 }

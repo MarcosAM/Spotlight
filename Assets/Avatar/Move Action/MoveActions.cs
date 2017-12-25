@@ -24,7 +24,7 @@ public class MoveActions : MonoBehaviour {
 
 	void Update ()
 	{
-		if (myAvatar.myAvatarState == Glossary.AvatarStates.Normal && dashesAvailable <= 0) {
+		if ((myAvatar.myAvatarState == Glossary.AvatarStates.Normal || myAvatar.myAvatarState == Glossary.AvatarStates.Charging) && dashesAvailable <= 0) {
 			timeToRecharge -= Time.deltaTime;
 			if (timeToRecharge <= 0) {
 				dashesAvailable++;

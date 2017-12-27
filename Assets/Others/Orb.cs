@@ -7,8 +7,8 @@ public class Orb : MonoBehaviour {
 	Rigidbody2D rb2d;
 
 	public float speed = 5;
-	public Avatar following;
-	public bool isFollowing = false;
+	[HideInInspector]public Avatar following;
+	[HideInInspector]public bool isFollowing = false;
 
 	void Start () {
 		rb2d = GetComponent<Rigidbody2D> ();

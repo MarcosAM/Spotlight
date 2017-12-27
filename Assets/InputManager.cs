@@ -39,9 +39,9 @@ public class InputManager : MonoBehaviour {
 				return;
 			avatar.moveActions.RunOrAim(new Vector2 (Input.GetAxis (LHorizontal), Input.GetAxis (LVertical)),new Vector2 (Input.GetAxis (RHorizontal), Input.GetAxis (RVertical)));
 			if(Input.GetButtonDown(Fire))
-				avatar.FireBtnDown();
+				avatar.myGun.StartCoroutine("FireBtnDown");
 			if(Input.GetButtonUp(Fire))
-				avatar.FireBtnUp();
+				avatar.myGun.FireBtnUp();
 			if(Input.GetButtonDown(Dash))
 				avatar.moveActions.StartCoroutine("DashBtnDown");
 			if(Input.GetButtonUp(Dash))

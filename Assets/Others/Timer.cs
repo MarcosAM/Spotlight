@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class Timer : MonoBehaviour {
 
 	Text text;
-	int time=200;
+	int time=0;
 
 	void Start () {
 		text = GetComponentInChildren<Text>();
@@ -14,11 +14,10 @@ public class Timer : MonoBehaviour {
 	}
 	
 	IEnumerator Countdown(){
-		for(int i = time; i>0;i--){
-			time --;
+		for(int i = time; i<999;i--){
+			time ++;
 			text.text = time.ToString();
 			yield return new WaitForSecondsRealtime(1f);
 		}
-		print ("Acabou");
 	}
 }

@@ -5,10 +5,10 @@ using UnityEngine.UI;
 
 public class ScoreHUD : MonoBehaviour {
 
-	public int position;
+	[HideInInspector]public int position;
 
-	public Text text;
-	public Image image;
+	[HideInInspector]public Text text;
+	[HideInInspector]public Image image;
 
 	public Avatar avatar;
 	

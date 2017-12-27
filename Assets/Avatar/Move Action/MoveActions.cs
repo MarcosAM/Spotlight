@@ -14,7 +14,6 @@ public class MoveActions : MonoBehaviour {
 	[HideInInspector]public bool canDash = true;
 	public float dashDuration = 0.3f;
 	public float rechargeTime;
-	[HideInInspector]public float timeToRecharge;
 
 	Avatar avatar;
 	[HideInInspector]public Rigidbody2D rigidBody2D;
@@ -24,24 +23,11 @@ public class MoveActions : MonoBehaviour {
 	[HideInInspector] BoxCollider2D boxCollider2D;
 
 	void Start(){
-		timeToRecharge = rechargeTime;
-
 		rigidBody2D = GetComponent<Rigidbody2D>();
 		avatar = GetComponent<Avatar>();
 		dashParticles = GetComponentInChildren<DashParticles>();
 		assaultParticles = GetComponentInChildren<AssaultParticles>();
 		boxCollider2D = GetComponent<BoxCollider2D>();
-	}
-
-	void Update ()
-	{
-		if ((avatar.state == Glossary.AvatarStates.Normal || avatar.state == Glossary.AvatarStates.Charging) && !canDash) {
-			timeToRecharge -= Time.deltaTime;
-			if (timeToRecharge <= 0) {
-				canDash = true;
-				timeToRecharge = rechargeTime;
-			}
-		}
 	}
 
 	void FixedUpdate (){
@@ -65,8 +51,20 @@ public class MoveActions : MonoBehaviour {
 	}
 
 	public void DashBtnUp (){
-		StopDash();
-		StopAssaulting ();
+		if(avatar.state == Glossary.AvatarStates.Assaulting){
+			assaultParticles.StopAssault();
+			avatar.myGun.Overheat();
+			avatar.myGun.FireBtnUp();
+			StartCoroutine("RechargeDash");
+		}
+		if(avatar.state == Glossary.AvatarStates.Dashing){
+			avatar.state = Glossary.AvatarStates.Normal;
+			boxCollider2D.isTrigger = false;
+			boxCollider2D.size = new Vector2(1,1);
+			dashParticles.StopDash();
+			StartCoroutine("RechargeDash");
+		}
+		StopCoroutine("DashBtnDown");
 	}
 
 	public IEnumerator DashBtnDown(){
@@ -74,32 +72,26 @@ public class MoveActions : MonoBehaviour {
 			Dash();
 			avatar.state = Glossary.AvatarStates.Dashing;
 			boxCollider2D.isTrigger = true;
+			boxCollider2D.size = new Vector2(2,2);
 			dashParticles.StartDash();
+			yield return new WaitForSecondsRealtime (dashDuration);
 		}
-		if (avatar.state == Glossary.AvatarStates.Charging){
+		if (avatar.state == Glossary.AvatarStates.Charging && avatar.myGun.hasCharged){
+			StopCoroutine ("RechargeDash");
 			avatar.state = Glossary.AvatarStates.Assaulting;
-			avatar.myGun.chargeParticles.ChargeDown ();
+			avatar.myGun.chargeParticles.StopCharge ();
+			boxCollider2D.size = new Vector2(2,2);
 			Dash();
 			assaultParticles.StartAssault();
+			yield return new WaitForSecondsRealtime (dashDuration);
 		}
-		yield return new WaitForSecondsRealtime (dashDuration);
 		DashBtnUp();
 	}
 
-	public void StopDash (){
-		if(avatar.state == Glossary.AvatarStates.Dashing){
-			avatar.state = Glossary.AvatarStates.Normal;
-			boxCollider2D.isTrigger = false;
-			dashParticles.StopDash();
-			StopCoroutine("DashBtnDown");
-		}
-	}
-
-	void StopAssaulting(){
-		if(avatar.state == Glossary.AvatarStates.Assaulting){
-			assaultParticles.StopAssault();
-			avatar.StopCharging ();
-			StopCoroutine("DashBtnDown");
+	public IEnumerator RechargeDash (){
+		yield return new WaitForSecondsRealtime(rechargeTime);
+		if(!canDash){
+			canDash = true;
 		}
 	}
 

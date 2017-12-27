@@ -5,11 +5,9 @@ using UnityEngine;
 public class AssaultParticles : MonoBehaviour {
 
 	ParticleSystem particle;
-	Avatar avatar;
 
 	void Start(){
 		particle = GetComponent<ParticleSystem>();
-		avatar = GetComponentInParent<Avatar>();
 	}
 
 	public void StartAssault (){

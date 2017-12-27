@@ -6,13 +6,13 @@ public class SizeZone : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D c){
 		if (c.GetComponent<Avatar> ()) {
-			c.GetComponentInChildren<Gun> ().isSizeZone = true;
+//			c.GetComponentInChildren<Gun> ().isSizeZone = true;
 		}
 	}
 
 	void OnTriggerExit2D(Collider2D c){
 		if (c.GetComponent<Avatar> ()) {
-			c.GetComponentInChildren<Gun> ().isSizeZone = false;
+//			c.GetComponentInChildren<Gun> ().isSizeZone = false;
 		}
 	}
 }

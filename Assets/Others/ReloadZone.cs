@@ -8,13 +8,13 @@ public class ReloadZone : MonoBehaviour {
 
 	void OnTriggerEnter2D(Collider2D c){
 		if (c.GetComponent<Avatar> ()) {
-			c.GetComponentInChildren<Gun> ().currentRechargeTime = newRechargeTime;
+//			c.GetComponentInChildren<Gun> ().currentRechargeTime = newRechargeTime;
 		}
 	}
 
 	void OnTriggerExit2D(Collider2D c){
 		if (c.GetComponent<Avatar> ()) {
-			c.GetComponentInChildren<Gun> ().currentRechargeTime = c.GetComponentInChildren<Gun> ().standartRechargeTime;
+//			c.GetComponentInChildren<Gun> ().currentRechargeTime = c.GetComponentInChildren<Gun> ().standartRechargeTime;
 		}
 	}
 

@@ -10,60 +10,46 @@ public class Avatar : MonoBehaviour {
 	[HideInInspector]public Glossary.AvatarStates state = Glossary.AvatarStates.Normal;
 	[HideInInspector]public SpriteRenderer spriteRenderer;
 	[HideInInspector]public Orb orb;
+	[HideInInspector]public WorthHUD worthHUD;
 
 	public float currentLife=5;
 	public float maxLife=5;
 	public float stunDuration = 0.5f;
 
+	[HideInInspector]public bool didStole = false;
+
 	[HideInInspector]public int victoryPoints=0;
 	[HideInInspector]public int myWorth=1;
 	[HideInInspector]public int position=4;
 
-	void Start(){
-		moveActions = GetComponent<MoveActions>();
-		myGun = GetComponentInChildren<Gun>();
+	void Awake(){
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 	}
 
-	void OnTriggerEnter2D (Collider2D c)
-	{
-		if(c.GetComponent<Wall>()){
-			moveActions.DashBtnUp();
-		}
-//		if (c.GetComponent<Avatar> ()) {
-//			if(c.GetComponent<Avatar>().state == Glossary.AvatarStates.Normal){
-//				StealAndSwitch(c.GetComponentInChildren<Avatar>());
-//			}
-//			if(c.GetComponent<Avatar>().state == Glossary.AvatarStates.Charging){
-//				StealAndSwitch(c.GetComponentInChildren<Avatar>());
-//				c.GetComponent<Avatar> ().myGun.StopCharging ();
-//			}
-//		}
-//
-//		if(c.GetComponent<Catchable>() && !c.GetComponent<Catchable>().orb.isFollowing && state == Glossary.AvatarStates.Dashing){
-//			CatchOrSwitch(c.GetComponent<Catchable>().orb);
-//		}
-	}
-
-	void OnTriggerExit2D (Collider2D c){
-		if (c.GetComponent<Avatar> ()) {
-			if(c.GetComponent<Avatar>().state == Glossary.AvatarStates.Normal){
-				StealAndSwitch(c.GetComponentInChildren<Avatar>());
-			}
-			if(c.GetComponent<Avatar>().state == Glossary.AvatarStates.Charging){
-				StealAndSwitch(c.GetComponentInChildren<Avatar>());
-				c.GetComponent<Avatar> ().myGun.StopCharging ();
-			}
-		}
-
-		if(c.GetComponent<Catchable>() && !c.GetComponent<Catchable>().orb.isFollowing && state == Glossary.AvatarStates.Dashing){
-			CatchOrSwitch(c.GetComponent<Catchable>().orb);
-		}
+	void Start(){
+		moveActions = GetComponent<MoveActions>();
+		myGun = GetComponentInChildren<Gun>();
+		worthHUD = GetComponentInChildren<WorthHUD>();
+		worthHUD.RefreshWorthHUD(myWorth);
 	}
 
 	void OnTriggerStay2D (Collider2D c){
 		if(c.GetComponent<Wall>()){
 			moveActions.DashBtnUp();
+		}
+		if(!didStole){
+			if (c.GetComponent<Avatar> ()) {
+				if(c.GetComponent<Avatar>().state == Glossary.AvatarStates.Normal){
+					StealAndSwitch(c.GetComponentInChildren<Avatar>());
+				}
+				if(c.GetComponent<Avatar>().state == Glossary.AvatarStates.Charging){
+					StealAndSwitch(c.GetComponentInChildren<Avatar>());
+					c.GetComponent<Avatar> ().myGun.StopCharging ();
+				}
+			}
+			if(c.GetComponent<Catchable>() && !c.GetComponent<Catchable>().orb.isFollowing && state == Glossary.AvatarStates.Dashing){
+				CatchOrSwitch(c.GetComponent<Catchable>().orb);
+			}
 		}
 	}
 
@@ -120,6 +106,7 @@ public class Avatar : MonoBehaviour {
 				theirAvatar.orb.Follow(theirAvatar);
 			}
 		}
+		didStole = true;
 	}
 
 	void CatchOrSwitch (Orb otherOrb)
@@ -133,6 +120,7 @@ public class Avatar : MonoBehaviour {
 			orb = otherOrb;
 			otherOrb.Follow(GetComponent<Avatar>());
 		}
+		didStole = true;
 	}
 
 	public void ReduceLifeBy (float damage, Avatar enemy)
@@ -168,5 +156,6 @@ public class Avatar : MonoBehaviour {
 		myGun.ResetGun();
 		moveActions.canDash = true;
 		state = Glossary.AvatarStates.Normal;
+		didStole = false;
 	}
 }

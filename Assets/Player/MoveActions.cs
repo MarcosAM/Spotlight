@@ -33,16 +33,18 @@ public class MoveActions : MonoBehaviour {
 	void FixedUpdate (){
 		if(avatar.state != Glossary.AvatarStates.Stunned)
 			rigidBody2D.velocity = velocity;
+//			rigidBody2D.velocity = Vector2.Lerp(rigidBody2D.velocity,velocity,0.1f);
 	}
 
-	public void RunOrAim (Vector2 lStick, Vector2 rStick){
+	public void RunOrAim (Vector2 lStick, Vector2 rStick)
+	{
 		if (avatar.state == Glossary.AvatarStates.Normal || avatar.state == Glossary.AvatarStates.Charging) {
 			currentSpeed = walkingSpeed;
-			lookDirection = new Vector2(rStick.x, rStick.y);
-			if (hasAim && (rStick.x == 0f && rStick.y == 0f)){
+			lookDirection = new Vector2 (rStick.x, rStick.y);
+			if (hasAim && (rStick.x == 0f && rStick.y == 0f)) {
 				currentSpeed = runningSpeed;
-				lookDirection = new Vector2(lStick.x, -lStick.y);
-			} 
+				lookDirection = new Vector2 (lStick.x, -lStick.y);
+			}
 			LookAt(lookDirection.x,lookDirection.y);
 			velocity = lStick.normalized*currentSpeed;
 			dashParticles.LookAt(lStick);
@@ -63,6 +65,7 @@ public class MoveActions : MonoBehaviour {
 			boxCollider2D.size = new Vector2(1,1);
 			dashParticles.StopDash();
 			StartCoroutine("RechargeDash");
+			avatar.didStole = false;
 		}
 		StopCoroutine("DashBtnDown");
 	}

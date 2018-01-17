@@ -19,6 +19,8 @@ public class InputManager : MonoBehaviour {
 	string Dash;
 	#endregion
 
+	Vector2 lastAxis;
+
 	void Start () {
 //	DEFINIÇÃO DO CONTROLE - pt.2
 		#region
@@ -38,6 +40,8 @@ public class InputManager : MonoBehaviour {
 			if (avatar.state == Glossary.AvatarStates.Stunned)
 				return;
 			avatar.moveActions.RunOrAim(new Vector2 (Input.GetAxis (LHorizontal), Input.GetAxis (LVertical)),new Vector2 (Input.GetAxis (RHorizontal), Input.GetAxis (RVertical)));
+//			avatar.moveActions.RunOrAim(Vector2.Lerp(lastAxis,new Vector2 (Input.GetAxis (LHorizontal), Input.GetAxis (LVertical)),0.01f) ,new Vector2 (Input.GetAxis (RHorizontal), Input.GetAxis (RVertical)));
+//			lastAxis = new Vector2(Input.GetAxis (LHorizontal), Input.GetAxis (LVertical));
 			if(Input.GetButtonDown(Fire))
 				avatar.myGun.StartCoroutine("FireBtnDown");
 			if(Input.GetButtonUp(Fire))

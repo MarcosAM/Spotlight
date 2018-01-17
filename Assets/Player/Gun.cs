@@ -34,6 +34,7 @@ public class Gun : MonoBehaviour {
 		hudTemperature = GetComponentInChildren<HUDTemperature>();
 		hudTemperature.AjustSize(temperature,maxTemperature);
 		currentBulletSize = bulletSize;
+		currentCoolDownTime = coolDownTime;
 	}
 
 	public IEnumerator FireBtnDown (){

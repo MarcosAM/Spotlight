@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class ScoreKeeper : MonoBehaviour {
 
@@ -10,11 +11,13 @@ public class ScoreKeeper : MonoBehaviour {
 	int amountOfPlayers;
 
 	public PanelKeeper panelKeepers;
+	public Text vpToWinText;
 
 	void Start (){
 		DontDestroyOnLoad(gameObject);
 		players = FindObjectsOfType<Avatar>();
 		amountOfPlayers = players.Length;
+		vpToWinText.text = vpointsToWin.ToString();
 	}
 
 	public void RefreshGameState(){
@@ -28,6 +31,7 @@ public class ScoreKeeper : MonoBehaviour {
 		}
 		for(int l= 0;l<amountOfPlayers;l++){
 			players[l].myWorth = (amountOfPlayers+1)-players[l].position;
+			players[l].worthHUD.RefreshWorthHUD(players[l].myWorth);
 		}
 		for(int m= 0;m<amountOfPlayers;m++){
 			if(players[m].victoryPoints >= vpointsToWin){

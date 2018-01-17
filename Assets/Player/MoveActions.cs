@@ -46,7 +46,7 @@ public class MoveActions : MonoBehaviour {
 				lookDirection = new Vector2 (lStick.x, -lStick.y);
 			}
 			LookAt(lookDirection.x,lookDirection.y);
-			velocity = lStick.normalized*currentSpeed;
+			velocity = lStick*currentSpeed;
 			dashParticles.LookAt(lStick);
 			assaultParticles.LookAt(lStick);
 		}
@@ -107,7 +107,11 @@ public class MoveActions : MonoBehaviour {
 	}
 
 	public void LookAt (float x, float y){
-		float angle = Mathf.Atan2 (x, y) * Mathf.Rad2Deg;
+		
+		//float angle = Mathf.Atan2 (x, y) * Mathf.Rad2Deg;
+		float angle = Vector2.Angle(Vector2.down,new Vector2(x,y));
+
+		print (angle);
 		if (x != 0f || y != 0f) {
 			transform.rotation = Quaternion.Euler(new Vector3(0,0,angle));
 		}

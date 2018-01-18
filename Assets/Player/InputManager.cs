@@ -39,18 +39,7 @@ public class InputManager : MonoBehaviour {
 		if(isControllingAvatar){
 			if (avatar.state == Glossary.AvatarStates.Stunned)
 				return;
-
-			float LAxisX = Input.GetAxisRaw (LHorizontal);
-//			LAxisX = (float)(((int)(LAxisX * 1000)) / 1000);
-
-			float LAxisY = Input.GetAxisRaw (LVertical);
-//			LAxisY = (float)(((int)(LAxisY * 1000)) / 1000);
-
-			Vector2 LAxis = new Vector2 (LAxisX, LAxisY).normalized;
-
-			avatar.moveActions.RunOrAim(LAxis,new Vector2 (Input.GetAxisRaw (RHorizontal), Input.GetAxisRaw (RVertical)));
-//			avatar.moveActions.RunOrAim(Vector2.Lerp(lastAxis,new Vector2 (Input.GetAxis (LHorizontal), Input.GetAxis (LVertical)),0.01f) ,new Vector2 (Input.GetAxis (RHorizontal), Input.GetAxis (RVertical)));
-//			lastAxis = new Vector2(Input.GetAxis (LHorizontal), Input.GetAxis (LVertical));
+			avatar.moveActions.RunOrAim(new Vector2 (Input.GetAxisRaw (LHorizontal),Input.GetAxisRaw (LVertical)),new Vector2 (Input.GetAxisRaw (RHorizontal), Input.GetAxisRaw (RVertical)));
 			if(Input.GetButtonDown(Fire))
 				avatar.myGun.StartCoroutine("FireBtnDown");
 			if(Input.GetButtonUp(Fire))

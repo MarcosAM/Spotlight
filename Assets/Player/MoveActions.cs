@@ -35,52 +35,6 @@ public class MoveActions : MonoBehaviour {
 			rigidBody2D.velocity = velocity;
 	}
 
-//	public void RunOrAim (Vector2 lStick, Vector2 rStick)
-//	{
-//		if (avatar.state == Glossary.AvatarStates.Normal || avatar.state == Glossary.AvatarStates.Charging) {
-//			currentSpeed = walkingSpeed;
-//			lookDirection = new Vector2 (rStick.x, rStick.y);
-//			if (hasAim && (rStick.x == 0f && rStick.y == 0f)) {
-//				currentSpeed = runningSpeed;
-//				lookDirection = new Vector2 (lStick.x, -lStick.y);
-//			}
-//			LookAt(lookDirection.x,lookDirection.y);
-//			velocity = transform.up*-1*currentSpeed;
-//			dashParticles.LookAt(lStick);
-//			assaultParticles.LookAt(lStick);
-//		}
-//	}
-
-//	public void RunOrAim (Vector2 lStick, Vector2 rStick)
-//	{
-//		if (avatar.state == Glossary.AvatarStates.Normal || avatar.state == Glossary.AvatarStates.Charging) {
-//			currentSpeed = walkingSpeed;
-//
-//			if (rStick != Vector2.zero) {
-//				LookAt (rStick.x, rStick.y);
-//				float angle = Vector2.Angle (Vector2.up, new Vector2(lStick.x, lStick.y));
-//				if (lStick.x < 0) {
-//					angle *= -1;
-//				}
-//				velocity = Vector3.Lerp (velocity,-Quaternion.Euler(new Vector3(0,0,angle)).eulerAngles*currentSpeed,Time.deltaTime*10);
-//			}
-//
-//			else {
-//				currentSpeed = runningSpeed;
-//				LookAt (lStick.x,-lStick.y);
-//				velocity = transform.up * -1 * currentSpeed;
-//			}
-//
-//			float intensity;
-//			if (Mathf.Abs (lStick.x) > Mathf.Abs (lStick.y)) {
-//				intensity = Mathf.Abs (lStick.x);
-//			} else {
-//				intensity = Mathf.Abs (lStick.y);
-//			}
-//			velocity = velocity * intensity;
-//		}
-//	}
-
 	public void RunOrAim (Vector2 lStick, Vector2 rStick)
 	{
 		if (avatar.state == Glossary.AvatarStates.Normal || avatar.state == Glossary.AvatarStates.Charging) {

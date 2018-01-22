@@ -36,23 +36,7 @@ public class Zone : MonoBehaviour {
 	}
 	
 	void OnTriggerEnter2D(Collider2D c){
-		if(c.GetComponentInChildren<Gun>()){
-			if (zone == Zones.Damage) {
-				c.GetComponentInChildren<Gun>().damageZone = true;
-			}
-			if (zone == Zones.Piercing) {
-				c.GetComponentInChildren<Gun>().piercingZone = true;
-			}
-			if (zone == Zones.Cooldown) {
-				c.GetComponentInChildren<Gun>().currentCoolDownTime = coolDownTime;
-			}
-			if (zone == Zones.Size){
-				c.GetComponentInChildren<Gun>().sizeZone = bulletSize;
-			}
-			if(zone == Zones.Speed){
-				c.GetComponentInChildren<Gun>().speedZone = bulletSpeed;
-			}
-		}
+		GiveEffect (c);
 	}
 
 	void OnTriggerExit2D(Collider2D c){
@@ -97,11 +81,13 @@ public class Zone : MonoBehaviour {
 			float plusB = (newColor.b-color.b)*0.1f;
 			float plusA = (newColor.a-color.a)*0.1f;
 			for(int i = 1; i<=10;i++){
-				spriteRenderer.color = new Color(spriteRenderer.color.r+plusR,spriteRenderer.color.g+plusG,spriteRenderer.color.b+plusB,spriteRenderer.color.a+plusA);
 				yield return new WaitForSecondsRealtime(0.1f);
+				spriteRenderer.color = new Color(spriteRenderer.color.r+plusR,spriteRenderer.color.g+plusG,spriteRenderer.color.b+plusB,spriteRenderer.color.a+plusA);
 			}
-
+			GetComponent<CircleCollider2D> ().offset = new Vector2 (100,0);
+			yield return 0;
 			zone = newZone;
+			GetComponent<CircleCollider2D> ().offset = new Vector2 (0,0);
 			RefreshColor();
 		}
 	}
@@ -125,6 +111,46 @@ public class Zone : MonoBehaviour {
 		if(zone == Zones.Speed){
 			spriteRenderer.color = new Color (253f/255f, 253f/255f, 84f/255f, 147f/255f);
 			color = GetComponent<SpriteRenderer> ().color;
+		}
+	}
+
+	void GiveEffect (Collider2D c){
+		if(c.GetComponentInChildren<Gun>()){
+			if (zone == Zones.Damage) {
+				c.GetComponentInChildren<Gun>().damageZone = true;
+			}
+			if (zone == Zones.Piercing) {
+				c.GetComponentInChildren<Gun>().piercingZone = true;
+			}
+			if (zone == Zones.Cooldown) {
+				c.GetComponentInChildren<Gun>().currentCoolDownTime = coolDownTime;
+			}
+			if (zone == Zones.Size){
+				c.GetComponentInChildren<Gun>().sizeZone = bulletSize;
+			}
+			if(zone == Zones.Speed){
+				c.GetComponentInChildren<Gun>().speedZone = bulletSpeed;
+			}
+		}
+	}
+
+	void TakeEffectAway (Collider2D c){
+		if(c.GetComponentInChildren<Gun>()){
+			if (zone == Zones.Damage) {
+				c.GetComponentInChildren<Gun>().damageZone = false;
+			}
+			if (zone == Zones.Piercing) {
+				c.GetComponentInChildren<Gun>().piercingZone = false;
+			}
+			if (zone == Zones.Cooldown) {
+				c.GetComponentInChildren<Gun>().currentCoolDownTime = c.GetComponentInChildren<Gun>().coolDownTime;
+			}
+			if (zone == Zones.Size){
+				c.GetComponentInChildren<Gun>().sizeZone = 0;
+			}
+			if(zone == Zones.Speed){
+				c.GetComponentInChildren<Gun>().speedZone = 0;
+			}
 		}
 	}
 }

@@ -6,16 +6,16 @@ public class Gun : MonoBehaviour {
 
 	[HideInInspector]public float temperature = 0;
 	public float maxTemperature = 6;
-	[HideInInspector]public bool hasOverheated = false;
+
 	public float coolDownTime = 0.2f;
 	[HideInInspector]public float currentCoolDownTime = 0.2f;
+
+	bool isHoldingBtn = false;
+
+	[HideInInspector]public bool hasOverheated = false;
 	public float overheatTime = 1f;
 
-	public float ChargeTime;
-	[HideInInspector]public bool hasCharged = false;
-
 	public float bulletSize = 2f;
-	public float chargedBulletSize = 5f;
 	[HideInInspector]public float currentBulletSize;
 
 	[HideInInspector]public bool damageZone = false;
@@ -25,43 +25,29 @@ public class Gun : MonoBehaviour {
 
 	[HideInInspector]public Avatar avatar;
 	public Projectile projectilePrefab;
-	[HideInInspector]public ChargeParticles chargeParticles;
 	HUDTemperature hudTemperature;
 
 	void Start (){
 		avatar = GetComponentInParent<Avatar>();
-		chargeParticles = GetComponentInChildren<ChargeParticles> ();
 		hudTemperature = GetComponentInChildren<HUDTemperature>();
 		hudTemperature.AjustSize(temperature,maxTemperature);
 		currentBulletSize = bulletSize;
 		currentCoolDownTime = coolDownTime;
 	}
 
-	public IEnumerator FireBtnDown (){
+	public void FireBtnDown (){
 		if(avatar.state == Glossary.AvatarStates.Normal && !hasOverheated){
 			Shoot();
-			yield return new WaitForSecondsRealtime(0.1f);
-			avatar.state = Glossary.AvatarStates.Charging;
-			chargeParticles.Charge();
-			yield return new WaitForSecondsRealtime(ChargeTime);
-			hasCharged = true;
-			chargeParticles.SustainCharge();
-			currentBulletSize = chargedBulletSize;
 		}
 	}
 
 	public void FireBtnUp (){
-		if(avatar.state == Glossary.AvatarStates.Charging){
-			Shoot();
-		}
-		StopCharging();
+		isHoldingBtn = false;
 	}
 
 	public void StopCharging (){
 		if (avatar.state == Glossary.AvatarStates.Charging || avatar.state == Glossary.AvatarStates.Assaulting) {
-			hasCharged = false;
 			avatar.state=Glossary.AvatarStates.Normal;
-			chargeParticles.StopCharge ();
 			currentBulletSize = bulletSize;
 		}
 		StopCoroutine("FireBtnDown");
@@ -81,17 +67,12 @@ public class Gun : MonoBehaviour {
 			}
 			if(piercingZone)
 				projectile.isPiercing = true;
-			if (hasCharged) {
-				Overheat ();
-				projectile.currentDamage = projectile.chargedDamage;
+			temperature++;
+			hudTemperature.AjustSize(temperature,maxTemperature);
+			if (temperature >= maxTemperature) {
+				Overheat();
 			} else {
-				temperature++;
-				hudTemperature.AjustSize(temperature,maxTemperature);
-				if (temperature >= maxTemperature) {
-					Overheat();
-				} else {
-					StartCoroutine("CoolDown");
-				}
+				StartCoroutine("CoolDown");
 			}
 			if (damageZone) {
 				projectile.currentDamage = projectile.zoneDamage;
@@ -125,10 +106,14 @@ public class Gun : MonoBehaviour {
 
 	public IEnumerator CoolDown ()
 	{
+		isHoldingBtn = true;
 		while(temperature>0 && !hasOverheated){
 			yield return new WaitForSecondsRealtime(currentCoolDownTime);
 			temperature --;
 			hudTemperature.AjustSize(temperature,maxTemperature);
+			if(isHoldingBtn && avatar.state == Glossary.AvatarStates.Normal){
+				Shoot ();
+			}
 		}
 	}
 
@@ -138,8 +123,6 @@ public class Gun : MonoBehaviour {
 		hudTemperature.AjustSize(temperature,maxTemperature);
 		hasOverheated = false;
 		StopAllCoroutines();
-		hasCharged = false;
-		chargeParticles.StopCharge();
 		currentBulletSize = bulletSize;
 	}
 }

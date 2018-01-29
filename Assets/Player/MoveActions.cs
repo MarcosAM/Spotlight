@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class MoveActions : MonoBehaviour {
 
-	public float walkingSpeed = 6;
 	public float runningSpeed = 9;
 	[HideInInspector]public float currentSpeed;
 
@@ -16,7 +15,6 @@ public class MoveActions : MonoBehaviour {
 	[HideInInspector]public Rigidbody2D rigidBody2D;
 	[HideInInspector]public Vector2 velocity;
 	[HideInInspector]public DashParticles dashParticles;
-	[HideInInspector]public AssaultParticles assaultParticles;
 	[HideInInspector] BoxCollider2D boxCollider2D;
 	Transform movementTransform;
 
@@ -24,10 +22,10 @@ public class MoveActions : MonoBehaviour {
 		rigidBody2D = GetComponent<Rigidbody2D>();
 		avatar = GetComponent<Avatar>();
 		dashParticles = GetComponentInChildren<DashParticles>();
-		assaultParticles = GetComponentInChildren<AssaultParticles>();
 		boxCollider2D = GetComponent<BoxCollider2D>();
 		movementTransform = new GameObject ().transform;
 		movementTransform.rotation = transform.rotation;
+		currentSpeed = runningSpeed;
 	}
 
 	void FixedUpdate (){
@@ -37,16 +35,11 @@ public class MoveActions : MonoBehaviour {
 
 	public void RunOrAim (Vector2 lStick, Vector2 rStick)
 	{
-		if (avatar.state == Glossary.AvatarStates.Normal || avatar.state == Glossary.AvatarStates.Charging) {
-			currentSpeed = walkingSpeed;
-
-			if (rStick != Vector2.zero) {
+		if (avatar.state == Glossary.AvatarStates.Normal) {
+			if (rStick != Vector2.zero)
 				LookAt (rStick.x, rStick.y);
-			}
-			else {
-				currentSpeed = runningSpeed;
+			else 
 				LookAt (lStick.x,-lStick.y);
-			}
 
 			MoveTo (lStick.x,-lStick.y);
 			velocity = movementTransform.up* -1 * currentSpeed;
@@ -82,12 +75,7 @@ public class MoveActions : MonoBehaviour {
 	}
 
 	public void DashBtnUp (){
-		if(avatar.state == Glossary.AvatarStates.Assaulting){
-			assaultParticles.StopAssault();
-			avatar.myGun.Overheat();
-			avatar.myGun.FireBtnUp();
-			StartCoroutine("RechargeDash");
-		}
+
 		if(avatar.state == Glossary.AvatarStates.Dashing){
 			avatar.state = Glossary.AvatarStates.Normal;
 			boxCollider2D.isTrigger = false;
@@ -106,15 +94,6 @@ public class MoveActions : MonoBehaviour {
 			boxCollider2D.isTrigger = true;
 			boxCollider2D.size = new Vector2(2,2);
 			dashParticles.StartDash();
-			yield return new WaitForSecondsRealtime (dashDuration);
-		}
-		if (avatar.state == Glossary.AvatarStates.Charging && avatar.myGun.hasCharged){
-			StopCoroutine ("RechargeDash");
-			avatar.state = Glossary.AvatarStates.Assaulting;
-			avatar.myGun.chargeParticles.StopCharge ();
-			boxCollider2D.size = new Vector2(2,2);
-			Dash();
-			assaultParticles.StartAssault();
 			yield return new WaitForSecondsRealtime (dashDuration);
 		}
 		DashBtnUp();

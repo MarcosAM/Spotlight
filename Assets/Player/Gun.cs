@@ -107,9 +107,10 @@ public class Gun : MonoBehaviour {
 	public IEnumerator CoolDown ()
 	{
 		isHoldingBtn = true;
-		while(temperature>0 && !hasOverheated){
+		while((temperature>0 && !hasOverheated) || isHoldingBtn == true){
 			yield return new WaitForSecondsRealtime(currentCoolDownTime);
-			temperature --;
+			if(temperature>0)
+				temperature --;
 			hudTemperature.AjustSize(temperature,maxTemperature);
 			if(isHoldingBtn && avatar.state == Glossary.AvatarStates.Normal){
 				Shoot ();

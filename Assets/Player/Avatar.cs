@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Avatar : MonoBehaviour {
 
+	public bool isStealing = false;
+
 	[HideInInspector]public InputManager inputManager;
 	[HideInInspector]public MoveActions moveActions;
 	[HideInInspector]public Gun myGun;
@@ -92,35 +94,39 @@ public class Avatar : MonoBehaviour {
 		}
 		theirAvatar.StartStunned (0.3f);
 
-		Orb theirOrb;
-		Orb myOrb;
-		theirOrb = theirAvatar.orb;
-		myOrb = orb;
-		if (theirOrb != null || myOrb != null) {
-			orb = theirOrb;
-			theirAvatar.orb = myOrb;
-			if (orb != null) {
-				orb.Follow (GetComponent<Avatar> ());
+		if(isStealing){
+			Orb theirOrb;
+			Orb myOrb;
+			theirOrb = theirAvatar.orb;
+			myOrb = orb;
+			if (theirOrb != null || myOrb != null) {
+				orb = theirOrb;
+				theirAvatar.orb = myOrb;
+				if (orb != null) {
+					orb.Follow (GetComponent<Avatar> ());
+				}
+				if (theirAvatar.orb != null) {
+					theirAvatar.orb.Follow(theirAvatar);
+				}
 			}
-			if (theirAvatar.orb != null) {
-				theirAvatar.orb.Follow(theirAvatar);
-			}
+			didStole = true;	
 		}
-		didStole = true;
 	}
 
 	void CatchOrSwitch (Orb otherOrb)
 	{
-		if(orb != null){
-			orb.Release();
-			orb = otherOrb;
-			orb.Follow(GetComponent<Avatar>());
+		if(isStealing){
+			if(orb != null){
+				orb.Release();
+				orb = otherOrb;
+				orb.Follow(GetComponent<Avatar>());
+			}
+			else {
+				orb = otherOrb;
+				otherOrb.Follow(GetComponent<Avatar>());
+			}
+			didStole = true;
 		}
-		else {
-			orb = otherOrb;
-			otherOrb.Follow(GetComponent<Avatar>());
-		}
-		didStole = true;
 	}
 
 	public void ReduceLifeBy (float damage, Avatar enemy)

@@ -23,7 +23,6 @@ public class Orb : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D c){
 		Vector2 newVelocity = rb2d.velocity.normalized;
-		float randomAngle = Random.Range (-10,11);
 		rb2d.velocity = newVelocity * speed*2;
 	}
 

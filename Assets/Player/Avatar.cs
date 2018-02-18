@@ -46,7 +46,6 @@ public class Avatar : MonoBehaviour {
 				}
 				if(c.GetComponent<Avatar>().state == Glossary.AvatarStates.Charging){
 					StealAndSwitch(c.GetComponentInChildren<Avatar>());
-					c.GetComponent<Avatar> ().myGun.StopCharging ();
 				}
 			}
 			if(c.GetComponent<Catchable>() && !c.GetComponent<Catchable>().orb.isFollowing && state == Glossary.AvatarStates.Dashing){
@@ -65,7 +64,6 @@ public class Avatar : MonoBehaviour {
 
 	public IEnumerator StartStunned(){
 		if(state != Glossary.AvatarStates.Stunned){
-			myGun.StopCharging();
 			state = Glossary.AvatarStates.Stunned;
 			yield return new WaitForSecondsRealtime(stunDuration);
 		}
@@ -75,7 +73,6 @@ public class Avatar : MonoBehaviour {
 
 	public IEnumerator StartStunned(float duration){
 		if(state != Glossary.AvatarStates.Stunned){
-			myGun.StopCharging ();
 			state = Glossary.AvatarStates.Stunned;
 			yield return new WaitForSecondsRealtime(duration);
 		}
@@ -132,7 +129,6 @@ public class Avatar : MonoBehaviour {
 	public void ReduceLifeBy (float damage, Avatar enemy)
 	{
 		currentLife -= damage;
-		myGun.StopCharging ();
 		if (currentLife <= 0) {
 			enemy.victoryPoints += myWorth;
 			StartCoroutine("Die");

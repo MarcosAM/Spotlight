@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Zone : MonoBehaviour {
 
-	public enum Zones : short {Damage, Piercing, Cooldown, Speed, Size};
+	public enum Zones : short {Damage, Piercing, Cooldown, Triple, Bounce};
 
 	public Zones zone;
 	Zones newZone;
@@ -50,11 +50,11 @@ public class Zone : MonoBehaviour {
 			if (zone == Zones.Cooldown) {
 				c.GetComponentInChildren<Gun>().currentCoolDownTime = c.GetComponentInChildren<Gun>().coolDownTime;
 			}
-			if (zone == Zones.Size){
-				c.GetComponentInChildren<Gun>().sizeZone = 0;
+			if (zone == Zones.Triple){
+				c.GetComponentInChildren<Gun>().hasTripleShot = false;
 			}
-			if(zone == Zones.Speed){
-				c.GetComponentInChildren<Gun>().speedZone = 0;
+			if(zone == Zones.Bounce){
+				c.GetComponentInChildren<Gun>().doesBounce = false;
 			}
 		}
 	}
@@ -63,7 +63,7 @@ public class Zone : MonoBehaviour {
 		while(doesChange){
 			yield return new WaitForSecondsRealtime(timeToChange);
 
-			newZone = (Zones)Random.Range(0,4);
+			newZone = (Zones)Random.Range(0,5);
 
 			if (newZone == Zones.Damage)
 				newColor = new Color (253f/255f, 253f/255f, 253f/255f, 147f/255f);
@@ -71,9 +71,9 @@ public class Zone : MonoBehaviour {
 				newColor = new Color (84f/255f, 253f/255f, 84f/255f, 147f/255f);
 			if (newZone == Zones.Cooldown)
 				newColor = new Color (84f/255f, 84f/255f, 253f/255f, 147f/255f);
-			if (newZone == Zones.Size)
+			if (newZone == Zones.Triple)
 				newColor = new Color (253f/255f, 84f/255f, 84f/255f, 147f/255f);
-			if(newZone == Zones.Speed)
+			if(newZone == Zones.Bounce)
 				newColor = new Color (253f/255f, 253f/255f, 84f/255f, 147f/255f);
 
 			float plusR = (newColor.r-color.r)*0.1f;
@@ -104,11 +104,11 @@ public class Zone : MonoBehaviour {
 			spriteRenderer.color = new Color (84f/255f, 84f/255f, 253f/255f, 147f/255f);
 			color = GetComponent<SpriteRenderer> ().color;
 		}
-		if (zone == Zones.Size){
+		if (zone == Zones.Triple){
 			spriteRenderer.color = new Color (253f/255f, 84f/255f, 84f/255f, 147f/255f);
 			color = GetComponent<SpriteRenderer> ().color;
 		}
-		if(zone == Zones.Speed){
+		if(zone == Zones.Bounce){
 			spriteRenderer.color = new Color (253f/255f, 253f/255f, 84f/255f, 147f/255f);
 			color = GetComponent<SpriteRenderer> ().color;
 		}
@@ -125,11 +125,11 @@ public class Zone : MonoBehaviour {
 			if (zone == Zones.Cooldown) {
 				c.GetComponentInChildren<Gun>().currentCoolDownTime = coolDownTime;
 			}
-			if (zone == Zones.Size){
-				c.GetComponentInChildren<Gun>().sizeZone = bulletSize;
+			if (zone == Zones.Triple){
+				c.GetComponentInChildren<Gun>().hasTripleShot = true;
 			}
-			if(zone == Zones.Speed){
-				c.GetComponentInChildren<Gun>().speedZone = bulletSpeed;
+			if(zone == Zones.Bounce){
+				c.GetComponentInChildren<Gun>().doesBounce = true;
 			}
 		}
 	}
@@ -145,11 +145,11 @@ public class Zone : MonoBehaviour {
 			if (zone == Zones.Cooldown) {
 				c.GetComponentInChildren<Gun>().currentCoolDownTime = c.GetComponentInChildren<Gun>().coolDownTime;
 			}
-			if (zone == Zones.Size){
-				c.GetComponentInChildren<Gun>().sizeZone = 0;
+			if (zone == Zones.Triple){
+				c.GetComponentInChildren<Gun>().hasTripleShot = false;
 			}
-			if(zone == Zones.Speed){
-				c.GetComponentInChildren<Gun>().speedZone = 0;
+			if(zone == Zones.Bounce){
+				c.GetComponentInChildren<Gun>().doesBounce = false;
 			}
 		}
 	}

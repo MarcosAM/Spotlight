@@ -12,7 +12,7 @@ public class Timer : MonoBehaviour {
 		text = GetComponentInChildren<Text>();
 		StartCoroutine("Countdown");
 	}
-	
+
 	IEnumerator Countdown(){
 		for(int i = time; i<999;i--){
 			time ++;

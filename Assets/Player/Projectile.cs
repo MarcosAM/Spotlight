@@ -19,6 +19,8 @@ public class Projectile : MonoBehaviour {
 	public int bouncesLeft = 4;
 	public PhysicsMaterial2D physicsMaterial2D;
 	Collider2D c2D;
+	public Explosion explosionPrefab;
+	public bool isExplosive = false;
 	[HideInInspector]public bool isBouncing;
 	[HideInInspector]public float currentDamage;
 	[HideInInspector]public Vector2 direction;
@@ -73,6 +75,10 @@ public class Projectile : MonoBehaviour {
 			return;
 		}
 
+		if(c.GetComponent<Shield>()){
+			Destroy (gameObject);
+		}
+
 		if (c.GetComponent<Avatar> () && c.GetComponent<Avatar> ().state != Glossary.AvatarStates.Dashing && c.GetComponent<Avatar> ().state != Glossary.AvatarStates.Assaulting) {
 			if (c.GetComponent<Avatar> ().state == Glossary.AvatarStates.Charging || c.GetComponent<Avatar>().myGun.hasOverheated) {
 				c.GetComponent<Avatar> ().ReduceLifeBy (currentDamage * 2, gunFiredMe.avatar);
@@ -87,11 +93,19 @@ public class Projectile : MonoBehaviour {
 		if(isPiercing){
 			return;
 		}
+		if(isExplosive && !c.GetComponent<Shield>())
+			Explode ();
 		Destroy(gameObject);
 	}
 
 	void OnCollisionEnter2D (Collision2D c)
 	{
+		if(c.gameObject.GetComponent<Shield>() && c.gameObject.GetComponentInParent<Avatar>().state != Glossary.AvatarStates.Dashing){
+			bouncesLeft --;
+			if(bouncesLeft <=0){
+				Destroy(gameObject);
+			}
+		}
 		if (c.gameObject.GetComponent<Avatar> () && c.gameObject.GetComponent<Avatar> ().state != Glossary.AvatarStates.Dashing && c.gameObject.GetComponent<Avatar>().myGun != gunFiredMe) {
 			if (c.gameObject.GetComponent<Avatar> ().myGun.hasOverheated) {
 				c.gameObject.GetComponent<Avatar> ().ReduceLifeBy (currentDamage * 2, gunFiredMe.avatar);
@@ -104,6 +118,8 @@ public class Projectile : MonoBehaviour {
 		}
 		bouncesLeft --;
 		if(bouncesLeft <=0){
+			if(isExplosive)
+				Explode ();
 			Destroy(gameObject);
 		}
 	}
@@ -112,5 +128,9 @@ public class Projectile : MonoBehaviour {
 	{
 		size = newSize;
 		transform.localScale = minimumSize*size;
+	}
+
+	public void Explode (){
+		Explosion explosion = Instantiate (explosionPrefab, transform.position, Quaternion.identity);
 	}
 }

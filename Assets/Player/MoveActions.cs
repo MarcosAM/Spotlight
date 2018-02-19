@@ -15,7 +15,7 @@ public class MoveActions : MonoBehaviour {
 	[HideInInspector]public Rigidbody2D rigidBody2D;
 	[HideInInspector]public Vector2 velocity;
 	[HideInInspector]public DashParticles dashParticles;
-	[HideInInspector] BoxCollider2D boxCollider2D;
+	[HideInInspector]public BoxCollider2D boxCollider2D;
 	Transform movementTransform;
 
 	void Start(){
@@ -79,6 +79,7 @@ public class MoveActions : MonoBehaviour {
 		if(avatar.state == Glossary.AvatarStates.Dashing){
 			avatar.state = Glossary.AvatarStates.Normal;
 			boxCollider2D.isTrigger = false;
+			avatar.shield.boxCollider2D.isTrigger = false;
 			boxCollider2D.size = new Vector2(1,1);
 			dashParticles.StopDash();
 			StartCoroutine("RechargeDash");
@@ -93,6 +94,7 @@ public class MoveActions : MonoBehaviour {
 			avatar.state = Glossary.AvatarStates.Dashing;
 			boxCollider2D.isTrigger = true;
 			boxCollider2D.size = new Vector2(2,2);
+			avatar.shield.boxCollider2D.isTrigger = true;
 			dashParticles.StartDash();
 			yield return new WaitForSecondsRealtime (dashDuration);
 		}

@@ -23,6 +23,7 @@ public class Gun : MonoBehaviour {
 	public bool isPoisonous = false;
 	[HideInInspector]public Avatar poisonousEnemy;
 
+	public bool isExplosive = false;
 	[HideInInspector]public bool doesBounce = false;
 	[HideInInspector]public bool hasTripleShot = false;
 	[HideInInspector]public bool damageZone = false;
@@ -68,6 +69,8 @@ public class Gun : MonoBehaviour {
 				if(i==3)
 					projectile.direction = Quaternion.Euler(0,0,-10f)*projectile.direction;
 				projectile.gunFiredMe = this;
+				if (isExplosive)
+					projectile.isExplosive = true;
 				if(doesBounce){
 					projectile.isBouncing = true;
 				}
@@ -140,7 +143,7 @@ public class Gun : MonoBehaviour {
 		hasOverheated = false;
 		StopAllCoroutines();
 		currentBulletSize = bulletSize;
-		isPoisoned = false;
+		StopPoison ();
 	}
 
 	public void GetPoisoned (Avatar enemy){
@@ -148,6 +151,7 @@ public class Gun : MonoBehaviour {
 			isPoisoned = true;
 			poisonousEnemy = enemy;
 			StartCoroutine("DamageByPoison");
+			StartCoroutine (avatar.FlashColor(Color.green,1f));
 		}
 	}
 
@@ -162,5 +166,6 @@ public class Gun : MonoBehaviour {
 	public void StopPoison (){
 		isPoisoned = false;
 		StopCoroutine("DamageByPoison");
+		avatar.StopFlashColor ();
 	}
 }

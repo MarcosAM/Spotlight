@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Zone : MonoBehaviour {
 
-	public enum Zones : short {Damage, Piercing, Cooldown, Triple, Bounce};
+	public enum Zones : short {Poison, Piercing, Cooldown, Triple, Bounce, Explosive};
 
 	public Zones zone;
 	Zones newZone;
@@ -26,7 +26,7 @@ public class Zone : MonoBehaviour {
 	{
 		spriteRenderer = GetComponent<SpriteRenderer>();
 		if (doesChange) {
-			zone = (Zones)Random.Range (0, 5);
+			zone = (Zones)Random.Range (0, 6);
 			RefreshColor ();
 			StartCoroutine("ChangeZoneWithTime");
 		} else {
@@ -41,8 +41,8 @@ public class Zone : MonoBehaviour {
 
 	void OnTriggerExit2D(Collider2D c){
 		if(c.GetComponentInChildren<Gun>()){
-			if (zone == Zones.Damage) {
-				c.GetComponentInChildren<Gun>().damageZone = false;
+			if (zone == Zones.Poison) {
+				c.GetComponentInChildren<Gun>().isPoisonous = false;
 			}
 			if (zone == Zones.Piercing) {
 				c.GetComponentInChildren<Gun>().piercingZone = false;
@@ -56,6 +56,9 @@ public class Zone : MonoBehaviour {
 			if(zone == Zones.Bounce){
 				c.GetComponentInChildren<Gun>().doesBounce = false;
 			}
+			if(zone == Zones.Explosive){
+				c.GetComponentInChildren<Gun>().isExplosive = false;
+			}
 		}
 	}
 
@@ -65,15 +68,21 @@ public class Zone : MonoBehaviour {
 
 			newZone = (Zones)Random.Range(0,5);
 
-			if (newZone == Zones.Damage)
-				newColor = new Color (253f/255f, 253f/255f, 253f/255f, 147f/255f);
-			if (newZone == Zones.Piercing) 
+//			CINZA
+//			if (newZone == Zones.Poison)
+//				newColor = new Color (253f/255f, 253f/255f, 253f/255f, 147f/255f);
+
+			if (newZone == Zones.Poison)
 				newColor = new Color (84f/255f, 253f/255f, 84f/255f, 147f/255f);
+			if (newZone == Zones.Piercing) 
+				newColor = new Color (253f/255f, 13f/255f, 253f/255f, 147f/255f);
 			if (newZone == Zones.Cooldown)
 				newColor = new Color (84f/255f, 84f/255f, 253f/255f, 147f/255f);
 			if (newZone == Zones.Triple)
 				newColor = new Color (253f/255f, 84f/255f, 84f/255f, 147f/255f);
 			if(newZone == Zones.Bounce)
+				newColor = new Color (253f/255f, 253f/255f, 13f/255f, 147f/255f);
+			if(newZone == Zones.Explosive)
 				newColor = new Color (253f/255f, 253f/255f, 84f/255f, 147f/255f);
 
 			float plusR = (newColor.r-color.r)*0.1f;
@@ -92,12 +101,12 @@ public class Zone : MonoBehaviour {
 		}
 	}
 	void RefreshColor (){
-		if (zone == Zones.Damage) {
-			spriteRenderer.color = new Color (253f/255f, 253f/255f, 253f/255f, 147f/255f);
+		if (zone == Zones.Poison) {
+			spriteRenderer.color = new Color (84f/255f, 253f/255f, 84f/255f, 147f/255f);
 			color = GetComponent<SpriteRenderer> ().color;
 		}
 		if (zone == Zones.Piercing) {
-			spriteRenderer.color = new Color (84f/255f, 253f/255f, 84f/255f, 147f/255f);
+			spriteRenderer.color = new Color (253f/255f, 13f/255f, 253f/255f, 147f/255f);
 			color = GetComponent<SpriteRenderer> ().color;
 		}
 		if (zone == Zones.Cooldown) {
@@ -109,15 +118,18 @@ public class Zone : MonoBehaviour {
 			color = GetComponent<SpriteRenderer> ().color;
 		}
 		if(zone == Zones.Bounce){
-			spriteRenderer.color = new Color (253f/255f, 253f/255f, 84f/255f, 147f/255f);
+			spriteRenderer.color = new Color (253f/255f, 84f/255f, 13f/255f, 147f/255f);
 			color = GetComponent<SpriteRenderer> ().color;
 		}
+		if(zone == Zones.Explosive)
+			spriteRenderer.color = new Color (253f/255f, 253f/255f, 84f/255f, 147f/255f);
+			color = GetComponent<SpriteRenderer> ().color;
 	}
 
 	void GiveEffect (Collider2D c){
 		if(c.GetComponentInChildren<Gun>()){
-			if (zone == Zones.Damage) {
-				c.GetComponentInChildren<Gun>().damageZone = true;
+			if (zone == Zones.Poison) {
+				c.GetComponentInChildren<Gun>().isPoisonous = true;
 			}
 			if (zone == Zones.Piercing) {
 				c.GetComponentInChildren<Gun>().piercingZone = true;
@@ -131,13 +143,16 @@ public class Zone : MonoBehaviour {
 			if(zone == Zones.Bounce){
 				c.GetComponentInChildren<Gun>().doesBounce = true;
 			}
+			if(zone == Zones.Explosive){
+				c.GetComponentInChildren<Gun>().isExplosive = true;
+			}
 		}
 	}
 
 	void TakeEffectAway (Collider2D c){
 		if(c.GetComponentInChildren<Gun>()){
-			if (zone == Zones.Damage) {
-				c.GetComponentInChildren<Gun>().damageZone = false;
+			if (zone == Zones.Poison) {
+				c.GetComponentInChildren<Gun>().isPoisonous = false;
 			}
 			if (zone == Zones.Piercing) {
 				c.GetComponentInChildren<Gun>().piercingZone = false;
@@ -150,6 +165,9 @@ public class Zone : MonoBehaviour {
 			}
 			if(zone == Zones.Bounce){
 				c.GetComponentInChildren<Gun>().doesBounce = false;
+			}
+			if(zone == Zones.Explosive){
+				c.GetComponentInChildren<Gun>().isExplosive = false;
 			}
 		}
 	}

@@ -13,10 +13,14 @@ public class Avatar : MonoBehaviour {
 	[HideInInspector]public SpriteRenderer spriteRenderer;
 	[HideInInspector]public Orb orb;
 	[HideInInspector]public WorthHUD worthHUD;
+	[HideInInspector]public Color originalColor;
+	[HideInInspector]public Shield shield;
+	[HideInInspector]public bool isShielded = false;
 
 	public float currentLife=5;
 	public float maxLife=5;
 	public float stunDuration = 0.5f;
+	[HideInInspector]public bool isDying = false;
 
 	[HideInInspector]public bool didStole = false;
 
@@ -26,6 +30,8 @@ public class Avatar : MonoBehaviour {
 
 	void Awake(){
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+		shield = GetComponentInChildren<Shield> ();
+		shield.gameObject.SetActive(false);
 	}
 
 	void Start(){
@@ -33,6 +39,7 @@ public class Avatar : MonoBehaviour {
 		myGun = GetComponentInChildren<Gun>();
 		worthHUD = GetComponentInChildren<WorthHUD>();
 		worthHUD.RefreshWorthHUD(myWorth);
+		originalColor = spriteRenderer.color;
 	}
 
 	void OnTriggerStay2D (Collider2D c){
@@ -130,7 +137,9 @@ public class Avatar : MonoBehaviour {
 	{
 		currentLife -= damage;
 		if (currentLife <= 0) {
-			enemy.victoryPoints += myWorth;
+			if(enemy != this){
+				enemy.victoryPoints += myWorth;
+			}
 			StartCoroutine("Die");
 		}
 	}
@@ -159,5 +168,41 @@ public class Avatar : MonoBehaviour {
 		moveActions.canDash = true;
 		state = Glossary.AvatarStates.Normal;
 		didStole = false;
+		ShieldDown ();
+	}
+
+	public IEnumerator FlashColor(Color newColor, float time){
+		float i = 0;
+		float t = time / 10f;
+		while (1>0){
+			spriteRenderer.color = new Color (newColor.r + (originalColor.r - newColor.r) * ((Mathf.Cos (i) + 1) / 2),
+												newColor.g + (originalColor.g - newColor.g) * ((Mathf.Cos (i) + 1) / 2),
+												newColor.b + (originalColor.b - newColor.b) * ((Mathf.Cos (i) + 1) / 2),1F);
+			i += 360F / 10F;
+			yield return new WaitForSecondsRealtime (t);
+		}
+	}
+
+	public void StopFlashColor (){
+		StopCoroutine ("FlashColor");
+		spriteRenderer.color = originalColor;
+	}
+
+	public void ShieldUp(){
+		if(!isShielded){
+			isShielded = true;
+			shield.gameObject.SetActive (true);
+			shield.boxCollider2D.size = new Vector2 (1F,0.34F);
+			shield.boxCollider2D.offset = new Vector2 (0F,-0.33f);
+		}
+	}
+
+	public void ShieldDown(){
+		if(isShielded){
+			isShielded = false;
+			shield.gameObject.SetActive (false);
+			shield.boxCollider2D.size = new Vector2 (1F,1F);
+			shield.boxCollider2D.offset = new Vector2 (0F,0F);
+		}
 	}
 }

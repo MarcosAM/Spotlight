@@ -16,6 +16,7 @@ public class Avatar : MonoBehaviour {
 	[HideInInspector]public Color originalColor;
 	[HideInInspector]public Shield shield;
 	[HideInInspector]public bool isShielded = false;
+	[HideInInspector]public Vector2 currentColliderSize;
 
 	public float currentLife=5;
 	public float maxLife=5;
@@ -40,6 +41,7 @@ public class Avatar : MonoBehaviour {
 		worthHUD = GetComponentInChildren<WorthHUD>();
 		worthHUD.RefreshWorthHUD(myWorth);
 		originalColor = spriteRenderer.color;
+		currentColliderSize = Vector2.one;
 	}
 
 	void OnTriggerStay2D (Collider2D c){
@@ -168,7 +170,7 @@ public class Avatar : MonoBehaviour {
 		moveActions.canDash = true;
 		state = Glossary.AvatarStates.Normal;
 		didStole = false;
-		ShieldDown ();
+		ShieldDown ();	
 	}
 
 	public IEnumerator FlashColor(Color newColor, float time){
@@ -187,13 +189,11 @@ public class Avatar : MonoBehaviour {
 		StopCoroutine ("FlashColor");
 		spriteRenderer.color = originalColor;
 	}
-
+		
 	public void ShieldUp(){
 		if(!isShielded){
 			isShielded = true;
 			shield.gameObject.SetActive (true);
-			shield.boxCollider2D.size = new Vector2 (1F,0.34F);
-			shield.boxCollider2D.offset = new Vector2 (0F,-0.33f);
 		}
 	}
 
@@ -201,8 +201,6 @@ public class Avatar : MonoBehaviour {
 		if(isShielded){
 			isShielded = false;
 			shield.gameObject.SetActive (false);
-			shield.boxCollider2D.size = new Vector2 (1F,1F);
-			shield.boxCollider2D.offset = new Vector2 (0F,0F);
 		}
 	}
 }

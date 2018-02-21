@@ -79,8 +79,7 @@ public class MoveActions : MonoBehaviour {
 		if(avatar.state == Glossary.AvatarStates.Dashing){
 			avatar.state = Glossary.AvatarStates.Normal;
 			boxCollider2D.isTrigger = false;
-			avatar.shield.boxCollider2D.isTrigger = false;
-			boxCollider2D.size = new Vector2(1,1);
+			boxCollider2D.size = avatar.currentColliderSize;
 			dashParticles.StopDash();
 			StartCoroutine("RechargeDash");
 			avatar.didStole = false;
@@ -94,7 +93,6 @@ public class MoveActions : MonoBehaviour {
 			avatar.state = Glossary.AvatarStates.Dashing;
 			boxCollider2D.isTrigger = true;
 			boxCollider2D.size = new Vector2(2,2);
-			avatar.shield.boxCollider2D.isTrigger = true;
 			dashParticles.StartDash();
 			yield return new WaitForSecondsRealtime (dashDuration);
 		}

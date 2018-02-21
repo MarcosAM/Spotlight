@@ -4,11 +4,9 @@ using UnityEngine;
 
 public class Shield : MonoBehaviour {
 
-	[HideInInspector]public BoxCollider2D boxCollider2D;
-	[HideInInspector]public Avatar avatar;
+	public Collider2D boxCollider;
 
-	void Start () {
-		boxCollider2D = GetComponent<BoxCollider2D> ();
-		avatar = GetComponentInParent<Avatar> ();
+	void Start(){
+		boxCollider = GetComponent<Collider2D> ();
 	}
 }

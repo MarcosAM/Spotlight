@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Zone : MonoBehaviour {
 
-	public enum Zones : short {Poison, Piercing, Cooldown, Triple, Bounce, Explosive};
+	public enum Zones : short {Poison, Piercing, Cooldown, Triple, Bounce, Explosive, Shield};
 
 	public Zones zone;
 	Zones newZone;
@@ -26,7 +26,7 @@ public class Zone : MonoBehaviour {
 	{
 		spriteRenderer = GetComponent<SpriteRenderer>();
 		if (doesChange) {
-			zone = (Zones)Random.Range (0, 6);
+			zone = (Zones)Random.Range (0, 7);
 			RefreshColor ();
 			StartCoroutine("ChangeZoneWithTime");
 		} else {
@@ -59,6 +59,9 @@ public class Zone : MonoBehaviour {
 			if(zone == Zones.Explosive){
 				c.GetComponentInChildren<Gun>().isExplosive = false;
 			}
+			if(zone == Zones.Shield){
+				c.GetComponent<Avatar> ().ShieldDown ();
+			}
 		}
 	}
 
@@ -66,11 +69,7 @@ public class Zone : MonoBehaviour {
 		while(doesChange){
 			yield return new WaitForSecondsRealtime(timeToChange);
 
-			newZone = (Zones)Random.Range(0,5);
-
-//			CINZA
-//			if (newZone == Zones.Poison)
-//				newColor = new Color (253f/255f, 253f/255f, 253f/255f, 147f/255f);
+			newZone = (Zones)Random.Range(0,7);
 
 			if (newZone == Zones.Poison)
 				newColor = new Color (84f/255f, 253f/255f, 84f/255f, 147f/255f);
@@ -84,6 +83,9 @@ public class Zone : MonoBehaviour {
 				newColor = new Color (253f/255f, 253f/255f, 13f/255f, 147f/255f);
 			if(newZone == Zones.Explosive)
 				newColor = new Color (253f/255f, 253f/255f, 84f/255f, 147f/255f);
+			if (newZone == Zones.Shield)
+				newColor = new Color (84f/255f, 225/255f, 253f/255f, 147f/255f);
+
 
 			float plusR = (newColor.r-color.r)*0.1f;
 			float plusG = (newColor.g-color.g)*0.1f;
@@ -121,9 +123,14 @@ public class Zone : MonoBehaviour {
 			spriteRenderer.color = new Color (253f/255f, 84f/255f, 13f/255f, 147f/255f);
 			color = GetComponent<SpriteRenderer> ().color;
 		}
-		if(zone == Zones.Explosive)
+		if (zone == Zones.Explosive) {
 			spriteRenderer.color = new Color (253f/255f, 253f/255f, 84f/255f, 147f/255f);
 			color = GetComponent<SpriteRenderer> ().color;
+		}
+		if(zone == Zones.Shield){
+			spriteRenderer.color = new Color (84f/255f, 225/255f, 253f/255f, 147f/255f);
+			color = GetComponent<SpriteRenderer> ().color;
+		}
 	}
 
 	void GiveEffect (Collider2D c){
@@ -145,6 +152,9 @@ public class Zone : MonoBehaviour {
 			}
 			if(zone == Zones.Explosive){
 				c.GetComponentInChildren<Gun>().isExplosive = true;
+			}
+			if(zone == Zones.Shield){
+				c.GetComponent<Avatar> ().ShieldUp ();
 			}
 		}
 	}
@@ -168,6 +178,9 @@ public class Zone : MonoBehaviour {
 			}
 			if(zone == Zones.Explosive){
 				c.GetComponentInChildren<Gun>().isExplosive = false;
+			}
+			if(zone == Zones.Shield){
+				c.GetComponent<Avatar> ().ShieldDown ();
 			}
 		}
 	}

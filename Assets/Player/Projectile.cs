@@ -65,18 +65,17 @@ public class Projectile : MonoBehaviour {
 		}
 	}
 
-	public void Launch (){
-
-	}
-
 	void OnTriggerEnter2D (Collider2D c)
 	{
 		if (c.GetComponentInChildren<Gun> () == gunFiredMe || c.GetComponent<Zone>() || c.GetComponent<Catchable>()) {
 			return;
 		}
 
-		if(c.GetComponent<Shield>()){
-			Destroy (gameObject);
+		if(c.GetComponent<Avatar>() && c.GetComponent<Avatar>().isShielded){
+			if(c2D.IsTouching(c.GetComponent<Avatar>().shield.boxCollider)){
+				Destroy (gameObject);
+				return;
+			}
 		}
 
 		if (c.GetComponent<Avatar> () && c.GetComponent<Avatar> ().state != Glossary.AvatarStates.Dashing && c.GetComponent<Avatar> ().state != Glossary.AvatarStates.Assaulting) {
@@ -100,12 +99,12 @@ public class Projectile : MonoBehaviour {
 
 	void OnCollisionEnter2D (Collision2D c)
 	{
-		if(c.gameObject.GetComponent<Shield>() && c.gameObject.GetComponentInParent<Avatar>().state != Glossary.AvatarStates.Dashing){
-			bouncesLeft --;
-			if(bouncesLeft <=0){
-				Destroy(gameObject);
-			}
-		}
+//		if(c.gameObject.GetComponent<Shield>() && c.gameObject.GetComponentInParent<Avatar>().state != Glossary.AvatarStates.Dashing){
+//			bouncesLeft --;
+//			if(bouncesLeft <=0){
+//				Destroy(gameObject);
+//			}
+//		}
 		if (c.gameObject.GetComponent<Avatar> () && c.gameObject.GetComponent<Avatar> ().state != Glossary.AvatarStates.Dashing && c.gameObject.GetComponent<Avatar>().myGun != gunFiredMe) {
 			if (c.gameObject.GetComponent<Avatar> ().myGun.hasOverheated) {
 				c.gameObject.GetComponent<Avatar> ().ReduceLifeBy (currentDamage * 2, gunFiredMe.avatar);

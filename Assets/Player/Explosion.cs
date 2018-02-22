@@ -17,6 +17,9 @@ public class Explosion : MonoBehaviour {
 	}
 
 	void OnParticleCollision (GameObject g){
+		if(g.GetComponent<Shield>()){
+			Destroy (gameObject);
+		}
 		if (g.GetComponent<Avatar> ()) {
 			g.GetComponent<Avatar> ().ReduceLifeBy (0.05F,FindObjectOfType<Avatar>());
 		}

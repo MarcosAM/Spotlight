@@ -29,10 +29,10 @@ public class ScoreKeeper : MonoBehaviour {
 				}
 			}
 		}
-		for(int l= 0;l<amountOfPlayers;l++){
-			players[l].myWorth = (amountOfPlayers+1)-players[l].position;
-			players[l].worthHUD.RefreshWorthHUD(players[l].myWorth);
-		}
+//		for(int l= 0;l<amountOfPlayers;l++){
+//			players[l].myWorth = (amountOfPlayers+1)-players[l].position;
+//			players[l].worthHUD.RefreshWorthHUD(players[l].myWorth);
+//		}
 		for(int m= 0;m<amountOfPlayers;m++){
 			if(players[m].victoryPoints >= vpointsToWin){
 				EndGame(players[m].victoryPoints,players[m].spriteRenderer.color, m);

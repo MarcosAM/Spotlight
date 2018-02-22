@@ -29,6 +29,8 @@ public class Avatar : MonoBehaviour {
 	[HideInInspector]public int myWorth=1;
 	[HideInInspector]public int position=4;
 
+	public VPIcon vpIconPrefab;
+
 	void Awake(){
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		shield = GetComponentInChildren<Shield> ();
@@ -38,8 +40,8 @@ public class Avatar : MonoBehaviour {
 	void Start(){
 		moveActions = GetComponent<MoveActions>();
 		myGun = GetComponentInChildren<Gun>();
-		worthHUD = GetComponentInChildren<WorthHUD>();
-		worthHUD.RefreshWorthHUD(myWorth);
+//		worthHUD = GetComponentInChildren<WorthHUD>();
+//		worthHUD.RefreshWorthHUD(myWorth);
 		originalColor = spriteRenderer.color;
 		currentColliderSize = Vector2.one;
 	}
@@ -141,6 +143,8 @@ public class Avatar : MonoBehaviour {
 		if (currentLife <= 0) {
 			if(enemy != this){
 				enemy.victoryPoints += myWorth;
+				VPIcon vp = Instantiate (vpIconPrefab,transform.position,Quaternion.identity);
+				vp.Initialize (0.3f,8f,enemy.spriteRenderer.color);
 			}
 			StartCoroutine("Die");
 		}

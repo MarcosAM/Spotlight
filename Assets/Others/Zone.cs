@@ -13,6 +13,8 @@ public class Zone : MonoBehaviour {
 	Color color;
 	Color newColor;
 
+	[SerializeField]float HP = 18f;
+
 	public float coolDownTime = 0.1f;
 	public float bulletSize;
 	public float bulletSpeed;
@@ -20,19 +22,24 @@ public class Zone : MonoBehaviour {
 	public bool doesChange;
 	public float timeToChange = 8f;
 
+	public VPIcon vpIconPrefab;
 	SpriteRenderer spriteRenderer;
+	Collider2D c2D;
+	ScoreKeeper scoreKeeper;
 
-	void Start ()
+	void Awake ()
 	{
+		scoreKeeper = FindObjectOfType<ScoreKeeper> ();
 		spriteRenderer = GetComponent<SpriteRenderer>();
 		if (doesChange) {
-			zone = (Zones)Random.Range (0, 7);
-			RefreshColor ();
+			RandomizeAndActive ();
 			StartCoroutine("ChangeZoneWithTime");
 		} else {
 			RefreshColor();
 		}
 		transform.localScale = new Vector3(size,size,size);
+		c2D = GetComponent<Collider2D> ();
+		StartCoroutine (GiveVPs());
 	}
 	
 	void OnTriggerEnter2D(Collider2D c){
@@ -182,6 +189,44 @@ public class Zone : MonoBehaviour {
 			if(zone == Zones.Shield){
 				c.GetComponent<Avatar> ().ShieldDown ();
 			}
+		}
+	}
+
+	public void RandomizeAndActive(){
+		zone = (Zones)Random.Range (0, 7);
+		RefreshColor ();
+		GetComponentInParent<Orb>().transform.position = new Vector3 (Random.Range(-16.0F,16.0F),Random.Range(-4.0F,4.0F),GetComponentInParent<Orb>().transform.position.z);
+	}
+
+	IEnumerator GiveVPs(){
+		int i;
+		Avatar[] avatars = FindObjectsOfType<Avatar> ();
+		while(1>0){
+			RaycastHit2D[] hits = new RaycastHit2D[10];
+			i = c2D.Cast(Vector2.zero, hits);
+			if(i != 0){
+				foreach (RaycastHit2D hit in hits){
+					if(hit.collider != null){
+						if(hit.collider.gameObject.GetComponent<Avatar>()){
+							foreach (Avatar a in avatars){
+								if(hit.collider.gameObject.GetComponent<Avatar>() == a){
+									a.victoryPoints++;
+									VPIcon vp = Instantiate (vpIconPrefab,a.transform.position,Quaternion.identity);
+									vp.Initialize (0.3f,8f,a.spriteRenderer.color);
+									scoreKeeper.RefreshGameState ();
+									HP--;
+									if(HP <=0){
+										GetComponent<CircleCollider2D> ().offset = new Vector2 (100,0);
+										yield return 0;
+										Destroy (GetComponentInParent<Orb>().gameObject);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			yield return new WaitForSecondsRealtime (1.5f);
 		}
 	}
 }

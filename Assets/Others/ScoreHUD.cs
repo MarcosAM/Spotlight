@@ -25,13 +25,13 @@ public class ScoreHUD : MonoBehaviour {
 	{
 		text.text = avatar.victoryPoints.ToString ();
 		image.color = avatar.spriteRenderer.color;
-		if (avatar.position == 1)
-			text.fontSize = 50;
-		if(avatar.position == 2)
-			text.fontSize = 40;
-		if(avatar.position == 3)
-			text.fontSize = 30;
-		if(avatar.position == 4)
-			text.fontSize = 20;
+//		if (avatar.position == 1)
+//			text.fontSize = 50;
+//		if(avatar.position == 2)
+//			text.fontSize = 40;
+//		if(avatar.position == 3)
+//			text.fontSize = 30;
+//		if(avatar.position == 4)
+//			text.fontSize = 20;
 	}
 }

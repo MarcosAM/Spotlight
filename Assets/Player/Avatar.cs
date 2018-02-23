@@ -47,7 +47,7 @@ public class Avatar : MonoBehaviour {
 	}
 
 	void OnTriggerStay2D (Collider2D c){
-		if(c.GetComponent<Wall>()){
+		if(c.GetComponent<Wall>() || c.GetComponent<Hole>()){
 			moveActions.DashBtnUp();
 		}
 		if(!didStole){

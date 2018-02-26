@@ -20,7 +20,8 @@ public class Avatar : MonoBehaviour {
 
 	public float currentLife=5;
 	public float maxLife=5;
-	public float stunDuration = 0.5f;
+	public float timeToSpawn;
+	[HideInInspector]public float stunDuration = 0.5f;
 	[HideInInspector]public bool isDying = false;
 
 	[HideInInspector]public bool didStole = false;
@@ -160,7 +161,7 @@ public class Avatar : MonoBehaviour {
 		Refresh();
 		transform.position = new Vector3(300,300,transform.position.z);
 		inputManager.isControllingAvatar = false;
-		yield return new WaitForSecondsRealtime(5);
+		yield return new WaitForSecondsRealtime(timeToSpawn);
 		inputManager.isControllingAvatar = true;
 		SpawnPoint[] spawnPoints = FindObjectsOfType<SpawnPoint>();
 		int n = spawnPoints.Length;

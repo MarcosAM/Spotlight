@@ -113,4 +113,10 @@ public class MoveActions : MonoBehaviour {
 			canDash = false;
 		}
 	}
+
+//	public void CheckToRegenerate (){
+//		if(avatar.currentLife != avatar.maxLife){
+//			
+//		}
+//	}
 }

@@ -22,15 +22,20 @@ public class Zone : MonoBehaviour {
 	public bool doesChange;
 	public float timeToChange = 8f;
 
+	Orb orb;
 	public VPIcon vpIconPrefab;
 	SpriteRenderer spriteRenderer;
-	Collider2D c2D;
+	public Collider2D c2D;
 	ScoreKeeper scoreKeeper;
 
-	void Awake ()
-	{
-		scoreKeeper = FindObjectOfType<ScoreKeeper> ();
+	void Awake(){
 		spriteRenderer = GetComponent<SpriteRenderer>();
+		orb = GetComponentInParent<Orb> ();
+		scoreKeeper = FindObjectOfType<ScoreKeeper> ();
+	}
+
+	void Start ()
+	{
 		if (doesChange) {
 			RandomizeAndActive ();
 			StartCoroutine("ChangeZoneWithTime");
@@ -79,19 +84,19 @@ public class Zone : MonoBehaviour {
 			newZone = (Zones)Random.Range(0,7);
 
 			if (newZone == Zones.Poison)
-				newColor = new Color (84f/255f, 253f/255f, 84f/255f, 147f/255f);
+				newColor = new Color (84f/255f, 253f/255f, 84f/255f, 100f/255f);
 			if (newZone == Zones.Piercing) 
-				newColor = new Color (253f/255f, 13f/255f, 253f/255f, 147f/255f);
+				newColor = new Color (253f/255f, 13f/255f, 253f/255f, 100f/255f);
 			if (newZone == Zones.Cooldown)
-				newColor = new Color (84f/255f, 84f/255f, 253f/255f, 147f/255f);
+				newColor = new Color (84f/255f, 84f/255f, 253f/255f, 100f/255f);
 			if (newZone == Zones.Triple)
-				newColor = new Color (253f/255f, 84f/255f, 84f/255f, 147f/255f);
+				newColor = new Color (253f/255f, 84f/255f, 84f/255f, 100f/255f);
 			if(newZone == Zones.Bounce)
-				newColor = new Color (253f/255f, 253f/255f, 13f/255f, 147f/255f);
+				newColor = new Color (253f/255f, 253f/255f, 13f/255f, 100f/255f);
 			if(newZone == Zones.Explosive)
-				newColor = new Color (253f/255f, 253f/255f, 84f/255f, 147f/255f);
+				newColor = new Color (253f/255f, 253f/255f, 84f/255f, 100f/255f);
 			if (newZone == Zones.Shield)
-				newColor = new Color (84f/255f, 225/255f, 253f/255f, 147f/255f);
+				newColor = new Color (84f/255f, 225/255f, 253f/255f, 100f/255f);
 
 
 			float plusR = (newColor.r-color.r)*0.1f;
@@ -111,32 +116,39 @@ public class Zone : MonoBehaviour {
 	}
 	void RefreshColor (){
 		if (zone == Zones.Poison) {
-			spriteRenderer.color = new Color (84f/255f, 253f/255f, 84f/255f, 147f/255f);
+			spriteRenderer.color = new Color (84f/255f, 253f/255f, 84f/255f, 100f/255f);
 			color = GetComponent<SpriteRenderer> ().color;
+			orb.text.text = "VENENOSO";
 		}
 		if (zone == Zones.Piercing) {
-			spriteRenderer.color = new Color (253f/255f, 13f/255f, 253f/255f, 147f/255f);
+			spriteRenderer.color = new Color (253f/255f, 13f/255f, 253f/255f, 100f/255f);
 			color = GetComponent<SpriteRenderer> ().color;
+			orb.text.text = "PERFURANTE";
 		}
 		if (zone == Zones.Cooldown) {
-			spriteRenderer.color = new Color (84f/255f, 84f/255f, 253f/255f, 147f/255f);
+			spriteRenderer.color = new Color (84f/255f, 84f/255f, 253f/255f, 100f/255f);
 			color = GetComponent<SpriteRenderer> ().color;
+			orb.text.text = "METRALHADORA";
 		}
 		if (zone == Zones.Triple){
-			spriteRenderer.color = new Color (253f/255f, 84f/255f, 84f/255f, 147f/255f);
+			spriteRenderer.color = new Color (253f/255f, 84f/255f, 84f/255f, 100f/255f);
 			color = GetComponent<SpriteRenderer> ().color;
+			orb.text.text = "TIRO TRIPLO";
 		}
 		if(zone == Zones.Bounce){
-			spriteRenderer.color = new Color (253f/255f, 84f/255f, 13f/255f, 147f/255f);
+			spriteRenderer.color = new Color (253f/255f, 84f/255f, 13f/255f, 100f/255f);
 			color = GetComponent<SpriteRenderer> ().color;
+			orb.text.text = "RICOCHETEIA";
 		}
 		if (zone == Zones.Explosive) {
-			spriteRenderer.color = new Color (253f/255f, 253f/255f, 84f/255f, 147f/255f);
+			spriteRenderer.color = new Color (253f/255f, 253f/255f, 84f/255f, 100f/255f);
 			color = GetComponent<SpriteRenderer> ().color;
+			orb.text.text = "EXPLOSIVA";
 		}
 		if(zone == Zones.Shield){
-			spriteRenderer.color = new Color (84f/255f, 225/255f, 253f/255f, 147f/255f);
+			spriteRenderer.color = new Color (84f/255f, 225/255f, 253f/255f, 100f/255f);
 			color = GetComponent<SpriteRenderer> ().color;
+			orb.text.text = "ESCUDO";
 		}
 	}
 
@@ -215,15 +227,27 @@ public class Zone : MonoBehaviour {
 									vp.Initialize (0.3f,8f,a.spriteRenderer.color);
 									scoreKeeper.RefreshGameState ();
 									HP--;
-									if(HP <=0){
-										GetComponent<CircleCollider2D> ().offset = new Vector2 (100,0);
-										yield return 0;
-										Destroy (GetComponentInParent<Orb>().gameObject);
-									}
 								}
 							}
 						}
 					}
+				}
+				if(HP <=0){
+					Zone[] zones = FindObjectsOfType<Zone> ();
+					foreach (Avatar a in avatars) {
+						if(c2D.IsTouching(a.GetComponent<Collider2D>())){
+							bool hasSameZone = false;
+							foreach (Zone z in zones){
+								if(z.c2D.IsTouching(a.GetComponent<Collider2D>()) && z.zone == zone && z != this){
+									hasSameZone = true;
+								}
+							}
+							if(!hasSameZone){
+								TakeEffectAway (a.GetComponent<Collider2D>());
+							}
+						}
+					}
+					Destroy (GetComponentInParent<Orb>().gameObject);
 				}
 			}
 			yield return new WaitForSecondsRealtime (1.5f);

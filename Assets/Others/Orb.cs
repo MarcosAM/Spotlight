@@ -6,9 +6,14 @@ public class Orb : MonoBehaviour {
 
 	Rigidbody2D rb2d;
 
+	public TextMesh text;
 	public float speed = 5;
 	[HideInInspector]public Avatar following;
 	[HideInInspector]public bool isFollowing = false;
+
+	void Awake(){
+		text = GetComponentInChildren<TextMesh> ();
+	}
 
 	void Start () {
 		rb2d = GetComponent<Rigidbody2D> ();

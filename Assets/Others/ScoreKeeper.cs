@@ -18,14 +18,15 @@ public class ScoreKeeper : MonoBehaviour {
 		players = FindObjectsOfType<Avatar>();
 		amountOfPlayers = players.Length;
 		vpToWinText.text = vpointsToWin.ToString();
+		RefreshGameState ();
 	}
 
 	public void RefreshGameState(){
 		for(int i = 0;i<amountOfPlayers;i++){
-			players[i].position = amountOfPlayers;
+			players[i].position = 1;
 			for(int j = 0; j<amountOfPlayers;j++){
-				if(players[i].victoryPoints > players[j].victoryPoints){
-					players[i].position --;
+				if(players[i].victoryPoints < players[j].victoryPoints){
+					players[i].position ++;
 				}
 			}
 			players [i].personalWorthHUD.Refresh (players[i].position.ToString());

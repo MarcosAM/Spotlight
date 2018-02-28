@@ -224,7 +224,7 @@ public class Zone : MonoBehaviour {
 								if(hit.collider.gameObject.GetComponent<Avatar>() == a){
 									a.victoryPoints++;
 									VPIcon vp = Instantiate (vpIconPrefab,a.transform.position,Quaternion.identity);
-									vp.Initialize (0.3f,8f,a.spriteRenderer.color);
+									vp.Initialize (0.3f,8f,a.spriteRenderer.color,1);
 									scoreKeeper.RefreshGameState ();
 									HP--;
 								}

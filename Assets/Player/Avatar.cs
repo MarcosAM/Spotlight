@@ -155,7 +155,7 @@ public class Avatar : MonoBehaviour {
 			if(enemy != this){
 				enemy.victoryPoints += myWorth;
 				VPIcon vp = Instantiate (vpIconPrefab,transform.position,Quaternion.identity);
-				vp.Initialize (0.3f,8f,enemy.spriteRenderer.color);
+				vp.Initialize (0.3f,8f,enemy.spriteRenderer.color,myWorth);
 			}
 			StartCoroutine("Die");
 		}

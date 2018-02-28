@@ -14,7 +14,8 @@ public class HUDTemperature : MonoBehaviour {
 
 	void Start (){
 		maxSize = transform.localScale.x;
-		OverheatColor = spriteRenderer.color;
+//		OverheatColor = spriteRenderer.color;
+		OverheatColor = Color.red;
 	}
 
 	public void AjustSize (float currentTemperature, float maxTemperature){

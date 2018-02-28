@@ -36,10 +36,13 @@ public class MoveActions : MonoBehaviour {
 	public void RunOrAim (Vector2 lStick, Vector2 rStick)
 	{
 		if (avatar.state == Glossary.AvatarStates.Normal) {
-			if (rStick != Vector2.zero)
+			if (rStick != Vector2.zero) {
 				LookAt (rStick.x, rStick.y);
-			else 
+				avatar.scope.Activate ();
+			} else {
 				LookAt (lStick.x,-lStick.y);
+				avatar.scope.Deactivate ();
+			}
 
 			MoveTo (lStick.x,-lStick.y);
 			velocity = movementTransform.up* -1 * currentSpeed;

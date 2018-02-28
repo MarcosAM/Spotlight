@@ -17,10 +17,14 @@ public class Avatar : MonoBehaviour {
 	[HideInInspector]public Shield shield;
 	[HideInInspector]public bool isShielded = false;
 	[HideInInspector]public Vector2 currentColliderSize;
+	[HideInInspector]public LifeOrbs lifeOrbs;
+//	[HideInInspector]public Target target;
+	[HideInInspector]public Scope scope;
 
 	public float currentLife=5;
 	public float maxLife=5;
 	public float timeToSpawn;
+	public PersonalWorthHUD personalWorthHUD;
 	[HideInInspector]public float stunDuration = 0.5f;
 	[HideInInspector]public bool isDying = false;
 
@@ -39,12 +43,17 @@ public class Avatar : MonoBehaviour {
 	}
 
 	void Start(){
+		scope = GetComponentInChildren<Scope> ();
+//		target = GetComponentInChildren<Target> ();
 		moveActions = GetComponent<MoveActions>();
 		myGun = GetComponentInChildren<Gun>();
+		personalWorthHUD.Refresh (position.ToString());
 //		worthHUD = GetComponentInChildren<WorthHUD>();
 //		worthHUD.RefreshWorthHUD(myWorth);
 		originalColor = spriteRenderer.color;
 		currentColliderSize = Vector2.one;
+		lifeOrbs = GetComponentInChildren<LifeOrbs> ();
+		lifeOrbs.RefreshLifeOrbs ();
 	}
 
 	void OnTriggerStay2D (Collider2D c){
@@ -141,6 +150,7 @@ public class Avatar : MonoBehaviour {
 	public void ReduceLifeBy (float damage, Avatar enemy)
 	{
 		currentLife -= damage;
+		lifeOrbs.RefreshLifeOrbs ();
 		if (currentLife <= 0) {
 			if(enemy != this){
 				enemy.victoryPoints += myWorth;
@@ -171,6 +181,7 @@ public class Avatar : MonoBehaviour {
 
 	public void Refresh(){
 		currentLife = maxLife;
+		lifeOrbs.RefreshLifeOrbs ();
 		myGun.ResetGun();
 		moveActions.canDash = true;
 		state = Glossary.AvatarStates.Normal;

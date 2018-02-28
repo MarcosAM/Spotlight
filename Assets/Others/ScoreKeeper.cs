@@ -28,11 +28,12 @@ public class ScoreKeeper : MonoBehaviour {
 					players[i].position --;
 				}
 			}
+			players [i].personalWorthHUD.Refresh (players[i].position.ToString());
 		}
-//		for(int l= 0;l<amountOfPlayers;l++){
-//			players[l].myWorth = (amountOfPlayers+1)-players[l].position;
+		for(int l= 0;l<amountOfPlayers;l++){
+			players[l].myWorth = (amountOfPlayers+1)-players[l].position;
 //			players[l].worthHUD.RefreshWorthHUD(players[l].myWorth);
-//		}
+		}
 		for(int m= 0;m<amountOfPlayers;m++){
 			if(players[m].victoryPoints >= vpointsToWin){
 				EndGame(players[m].victoryPoints,players[m].spriteRenderer.color, m);

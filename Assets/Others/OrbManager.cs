@@ -16,12 +16,12 @@ public class OrbManager : MonoBehaviour {
 
 	IEnumerator SpawnOrbWithTime (float time){
 		while (1>0){
+			yield return new WaitForSecondsRealtime (time);
 			orbsInGame = FindObjectsOfType<Orb> ();
 			if(FindObjectsOfType<Orb>().Length < orbMax){
 				Orb orb = Instantiate (orbPrefab, transform.position,Quaternion.identity,transform);
 				orb.GetComponentInChildren<Zone> ().RandomizeAndActive ();
 			}
-			yield return new WaitForSecondsRealtime (time);
 		}
 	}
 }

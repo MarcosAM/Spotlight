@@ -42,7 +42,10 @@ public class Orb : MonoBehaviour {
 		isFollowing = false;
 		GetComponent<CircleCollider2D> ().enabled = true;
 
-		Vector2 direction = new Vector2 (Random.Range (-2, 2), Random.Range (-2, 2));
+		Vector2 direction = new Vector2 (Random.Range (-2f, 2f), Random.Range (-2, 2f));
+		while (direction == Vector2.zero){
+			direction = new Vector2 (Random.Range (-2f, 2f), Random.Range (-2, 2f));
+		}
 		direction.Normalize ();
 		rb2d.AddForce (direction*speed);
 	}

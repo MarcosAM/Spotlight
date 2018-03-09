@@ -21,7 +21,7 @@ public class Explosion : MonoBehaviour {
 			Destroy (gameObject);
 		}
 		if (g.GetComponent<Avatar> ()) {
-			g.GetComponent<Avatar> ().ReduceLifeBy (0.05F,FindObjectOfType<Avatar>());
+			g.GetComponent<Avatar> ().ReduceLifeBy (0.06F,FindObjectOfType<Avatar>());
 		}
 	}
 }

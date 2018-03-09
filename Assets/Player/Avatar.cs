@@ -24,6 +24,7 @@ public class Avatar : MonoBehaviour {
 	public float currentLife=5;
 	public float maxLife=5;
 	public float timeToSpawn;
+	public float regenerateTime = 1.5F;
 	public PersonalWorthHUD personalWorthHUD;
 	[HideInInspector]public float stunDuration = 0.5f;
 	[HideInInspector]public bool isDying = false;
@@ -147,10 +148,21 @@ public class Avatar : MonoBehaviour {
 		}
 	}
 
+	public IEnumerator Regenerate (){
+		yield return new WaitForSecondsRealtime (regenerateTime);
+		while (currentLife < maxLife){
+			currentLife++;
+			lifeOrbs.RefreshLifeOrbs ();
+			yield return new WaitForSecondsRealtime (regenerateTime);
+		}
+	}
+
 	public void ReduceLifeBy (float damage, Avatar enemy)
 	{
 		currentLife -= damage;
 		lifeOrbs.RefreshLifeOrbs ();
+		StopCoroutine ("Regenerate");
+		StartCoroutine ("Regenerate");
 		if (currentLife <= 0) {
 			if(enemy != this){
 				enemy.victoryPoints += myWorth;
@@ -187,6 +199,7 @@ public class Avatar : MonoBehaviour {
 		state = Glossary.AvatarStates.Normal;
 		didStole = false;
 		ShieldDown ();	
+		StopCoroutine ("Regenerate");
 	}
 
 	public IEnumerator FlashColor(Color newColor, float time){

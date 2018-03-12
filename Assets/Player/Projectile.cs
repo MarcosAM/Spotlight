@@ -84,7 +84,7 @@ public class Projectile : MonoBehaviour {
 			} else {
 				c.GetComponent<Avatar> ().ReduceLifeBy (currentDamage,gunFiredMe.avatar);
 			}
-			if(isPoisonous){
+			if(isPoisonous && !c.GetComponent<Avatar>().myGun.hasOverheated){
 				c.GetComponent<Avatar>().myGun.GetPoisoned(gunFiredMe.avatar);
 			}
 		}

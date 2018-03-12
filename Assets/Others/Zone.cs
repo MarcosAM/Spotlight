@@ -205,7 +205,17 @@ public class Zone : MonoBehaviour {
 	}
 
 	public void RandomizeAndActive(){
-		zone = (Zones)Random.Range (0, 7);
+		int i=0;
+		Zone[] zones = FindObjectsOfType<Zone> ();
+		while (i < zones.Length) {
+			i = 0;
+			zone = (Zones)Random.Range (0, 7);
+			foreach (Zone z in zones){
+				if(zone != z.zone || this == z){
+					i++;
+				}
+			}
+		}
 		RefreshColor ();
 		GetComponentInParent<Orb>().transform.position = new Vector3 (Random.Range(-16.0F,16.0F),Random.Range(-4.0F,4.0F),GetComponentInParent<Orb>().transform.position.z);
 	}
@@ -226,7 +236,7 @@ public class Zone : MonoBehaviour {
 									VPIcon vp = Instantiate (vpIconPrefab,a.transform.position,Quaternion.identity);
 									vp.Initialize (0.3f,8f,a.spriteRenderer.color,1);
 									scoreKeeper.RefreshGameState ();
-									HP--;
+//									HP--;
 								}
 							}
 						}

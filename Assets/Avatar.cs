@@ -12,20 +12,17 @@ public class Avatar : MonoBehaviour {
 	[HideInInspector]public Glossary.AvatarStates state = Glossary.AvatarStates.Normal;
 	[HideInInspector]public SpriteRenderer spriteRenderer;
 	[HideInInspector]public Orb orb;
-	[HideInInspector]public WorthHUD worthHUD;
 	[HideInInspector]public Color originalColor;
 	[HideInInspector]public Shield shield;
 	[HideInInspector]public bool isShielded = false;
 	[HideInInspector]public Vector2 currentColliderSize;
 	[HideInInspector]public LifeOrbs lifeOrbs;
-//	[HideInInspector]public Target target;
 	[HideInInspector]public Scope scope;
 
 	public float currentLife=5;
 	public float maxLife=5;
 	public float timeToSpawn;
 	public float regenerateTime = 1.5F;
-	public PersonalWorthHUD personalWorthHUD;
 	[HideInInspector]public float stunDuration = 0.5f;
 	[HideInInspector]public bool isDying = false;
 
@@ -35,8 +32,6 @@ public class Avatar : MonoBehaviour {
 	[HideInInspector]public int myWorth=1;
 	[HideInInspector]public int position=4;
 
-	public VPIcon vpIconPrefab;
-
 	void Awake(){
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		shield = GetComponentInChildren<Shield> ();
@@ -45,12 +40,8 @@ public class Avatar : MonoBehaviour {
 
 	void Start(){
 		scope = GetComponentInChildren<Scope> ();
-//		target = GetComponentInChildren<Target> ();
 		moveActions = GetComponent<MoveActions>();
 		myGun = GetComponentInChildren<Gun>();
-		personalWorthHUD.Refresh (position.ToString());
-//		worthHUD = GetComponentInChildren<WorthHUD>();
-//		worthHUD.RefreshWorthHUD(myWorth);
 		originalColor = spriteRenderer.color;
 		currentColliderSize = Vector2.one;
 		lifeOrbs = GetComponentInChildren<LifeOrbs> ();
@@ -166,8 +157,6 @@ public class Avatar : MonoBehaviour {
 		if (currentLife <= 0) {
 			if(enemy != this){
 				enemy.victoryPoints += myWorth;
-				VPIcon vp = Instantiate (vpIconPrefab,transform.position,Quaternion.identity);
-				vp.Initialize (0.3f,8f,enemy.spriteRenderer.color,myWorth);
 			}
 			StartCoroutine("Die");
 		}
@@ -185,10 +174,6 @@ public class Avatar : MonoBehaviour {
 		inputManager.isControllingAvatar = false;
 		yield return new WaitForSecondsRealtime(timeToSpawn);
 		inputManager.isControllingAvatar = true;
-		SpawnPoint[] spawnPoints = FindObjectsOfType<SpawnPoint>();
-		int n = spawnPoints.Length;
-		int r = Random.Range(0,n);
-		transform.position = spawnPoints[r].gameObject.transform.position;
 	}
 
 	public void Refresh(){

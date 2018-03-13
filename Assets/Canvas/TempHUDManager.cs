@@ -2,22 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Temperatures : MonoBehaviour {
+public class TempHUDManager : MonoBehaviour {
 
-	public Temperature temperaturePrefab;
-	Canvas canvas;
+	public TempHUD temperaturePrefab;
+	[HideInInspector] Canvas canvas;
 
 	void Start(){
-		canvas = FindObjectOfType<Canvas> ();
+		canvas = GetComponent<Canvas>();
 		StartTemperatureHUD ();
 	}
 
 	public void StartTemperatureHUD(){
 		Avatar[] avatars = FindObjectsOfType<Avatar> ();
 		for (int i = 0;i<avatars.Length;i++){
-			Temperature temperature = Instantiate (temperaturePrefab, canvas.transform);
+			TempHUD temperature = Instantiate (temperaturePrefab, canvas.transform);
 			temperature.SetAvatar (avatars[i]);
-//			temperature.avatar = avatars [i];
 		}
 	}
 }

@@ -7,7 +7,6 @@ public class InputManager : MonoBehaviour {
 	[HideInInspector]public bool isControllingAvatar=true;
 	public GameObject gameObjectAvatar;
 	[HideInInspector]public Avatar avatar;
-	public Target target;
 
 //	DEFINIÇÂO DO CONTROLE - pt.1
 	public int number;
@@ -41,7 +40,6 @@ public class InputManager : MonoBehaviour {
 			if (avatar.state == Glossary.AvatarStates.Stunned)
 				return;
 			avatar.moveActions.RunOrAim(new Vector2 (Input.GetAxisRaw (LHorizontal),Input.GetAxisRaw (LVertical)),new Vector2 (Input.GetAxisRaw (RHorizontal), Input.GetAxisRaw (RVertical)));
-//			target.MoveAim (new Vector2 (Input.GetAxisRaw (RHorizontal), -Input.GetAxisRaw (RVertical)));
 			if(Input.GetButtonDown(Fire))
 				avatar.myGun.StartCoroutine("FireBtnDown");
 			if(Input.GetButtonUp(Fire))

@@ -11,15 +11,9 @@ public class Scope : MonoBehaviour {
 	void Start () {
 		Initialize ();
 	}
-	
-//	void Update () {
-//		
-//	}
 
 	public void Initialize(){
 		avatar = GetComponentInParent<Avatar> ();
-//		spriteRenderer = GetComponent<SpriteRenderer> ();
-//		spriteRenderer1.color = avatar.spriteRenderer.color;
 		Deactivate ();
 	}
 

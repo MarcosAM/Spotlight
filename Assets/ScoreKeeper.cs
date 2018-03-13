@@ -17,7 +17,6 @@ public class ScoreKeeper : MonoBehaviour {
 		DontDestroyOnLoad(gameObject);
 		players = FindObjectsOfType<Avatar>();
 		amountOfPlayers = players.Length;
-		vpToWinText.text = vpointsToWin.ToString();
 		RefreshGameState ();
 	}
 
@@ -29,7 +28,6 @@ public class ScoreKeeper : MonoBehaviour {
 					players[i].position ++;
 				}
 			}
-			players [i].personalWorthHUD.Refresh (players[i].position.ToString());
 		}
 		for(int l= 0;l<amountOfPlayers;l++){
 			players[l].myWorth = (amountOfPlayers+1)-players[l].position;

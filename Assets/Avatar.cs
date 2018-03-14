@@ -45,7 +45,7 @@ public class Avatar : MonoBehaviour {
 		originalColor = spriteRenderer.color;
 		currentColliderSize = Vector2.one;
 		lifeOrbs = GetComponentInChildren<LifeOrbs> ();
-		lifeOrbs.RefreshLifeOrbs ();
+//		lifeOrbs.RefreshLifeOrbs ();
 	}
 
 	void OnTriggerStay2D (Collider2D c){
@@ -143,23 +143,14 @@ public class Avatar : MonoBehaviour {
 		yield return new WaitForSecondsRealtime (regenerateTime);
 		while (currentLife < maxLife){
 			currentLife++;
-			lifeOrbs.RefreshLifeOrbs ();
+//			lifeOrbs.RefreshLifeOrbs ();
 			yield return new WaitForSecondsRealtime (regenerateTime);
 		}
 	}
 
 	public void ReduceLifeBy (float damage, Avatar enemy)
 	{
-		currentLife -= damage;
-		lifeOrbs.RefreshLifeOrbs ();
-		StopCoroutine ("Regenerate");
-		StartCoroutine ("Regenerate");
-		if (currentLife <= 0) {
-			if(enemy != this){
-				enemy.victoryPoints += myWorth;
-			}
-			StartCoroutine("Die");
-		}
+		lifeOrbs.TakeDamage(damage);
 	}
 
 	public IEnumerator Die ()
@@ -178,7 +169,7 @@ public class Avatar : MonoBehaviour {
 
 	public void Refresh(){
 		currentLife = maxLife;
-		lifeOrbs.RefreshLifeOrbs ();
+//		lifeOrbs.RefreshLifeOrbs ();
 		myGun.ResetGun();
 		moveActions.canDash = true;
 		state = Glossary.AvatarStates.Normal;

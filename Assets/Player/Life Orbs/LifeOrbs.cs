@@ -16,19 +16,19 @@ public class LifeOrbs : MonoBehaviour {
 	}
 
 	public void StockEffect (Glossary.Effect e, Color c){
-//		bool alreadyHas = false;
-		for (int i = lifeOrbs.Length-1;i>0;i--){
+		ActivateEffect (e);
+		for (int i = lifeOrbs.Length-1;i>=0;i--){
 			if (i == lifeOrbs.Length - 1) {
 				if (lifeOrbs [i].isDestroyed)
 					return;
 				if (lifeOrbs [i].GetEffect () != Glossary.Effect.Nothing) {
+					Glossary.Effect tempE = lifeOrbs [i].GetEffect ();
 					lifeOrbs [i].ReceiveEffect (Glossary.Effect.Nothing, Color.white);
+					CheckToDeactivate (tempE);
 				}
 			} else {
 				if(lifeOrbs[i].GetEffect() != Glossary.Effect.Nothing){
-//					alreadyHas = true;
 					lifeOrbs [i + 1].ReceiveEffect (lifeOrbs[i].GetEffect(),lifeOrbs[i].standartColor);
-//					lifeOrbs [i].GainEffect (Glossary.Effect.Nothing, Color.white);
 				}
 			}
 			if (lifeOrbs [i].isDestroyed) {
@@ -37,6 +37,7 @@ public class LifeOrbs : MonoBehaviour {
 			}
 			if(i==0){
 				lifeOrbs [i].ReceiveEffect (e,c);
+				print ("lol");
 			}
 		}
 	}
@@ -48,15 +49,7 @@ public class LifeOrbs : MonoBehaviour {
 				return;
 			}
 		}
-	}
-
-	void CheckToActivate(Glossary.Effect e){
-		foreach(LifeOrb lo in lifeOrbs){
-			if(!lo.isDestroyed && lo.GetEffect() == e){
-				return;
-			}
-		}
-		ActivateEffect (e);
+		avatar.Die ();
 	}
 
 	public void CheckToDeactivate(Glossary.Effect e){

@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Zone : MonoBehaviour {
 
-	public Glossary.Effect zone;
-	Glossary.Effect newZone;
+	public Glossary.Effect effect;
+	Glossary.Effect newEffect;
 	public float size;
 
 	Color color;
@@ -20,15 +20,24 @@ public class Zone : MonoBehaviour {
 	public bool doesChange;
 	public float timeToChange = 8f;
 
+	Collider2D[] avatarsCollider;
+	float[] avatarsCountdown;
+
+	Color poison = new Color (84f/255f, 253f/255f, 84f/255f, 100f/255f);
+	Color piercing = new Color (253f / 255f, 13f / 255f, 253f / 255f, 100f / 255f);
+	Color cooldown = new Color (84f/255f, 84f/255f, 253f/255f, 100f/255f);
+	Color triple = new Color (253f/255f, 84f/255f, 84f/255f, 100f/255f);
+	Color bounce = new Color (253f/255f, 253f/255f, 13f/255f, 100f/255f);
+	Color explosive = new Color (253f/255f, 253f/255f, 84f/255f, 100f/255f);
+	Color shield = new Color (84f/255f, 225/255f, 253f/255f, 100f/255f);
+
 	Orb orb;
 	SpriteRenderer spriteRenderer;
 	public Collider2D c2D;
-	ScoreKeeper scoreKeeper;
 
 	void Awake(){
 		spriteRenderer = GetComponent<SpriteRenderer>();
 		orb = GetComponentInParent<Orb> ();
-		scoreKeeper = FindObjectOfType<ScoreKeeper> ();
 	}
 
 	void Start ()
@@ -41,59 +50,65 @@ public class Zone : MonoBehaviour {
 		}
 		transform.localScale = new Vector3(size,size,size);
 		c2D = GetComponent<Collider2D> ();
-		StartCoroutine (GiveVPs());
-	}
-	
-	void OnTriggerEnter2D(Collider2D c){
-		GiveEffect (c);
+		avatarsCollider = new Collider2D[4];
+		avatarsCountdown = new float[4];
+		Avatar[] allAvatars = FindObjectsOfType<Avatar> ();
+		for(int i=0;i<allAvatars.Length;i++){
+			avatarsCollider [i] = allAvatars [i].GetComponent<Collider2D> ();
+			avatarsCountdown [i] = 0;
+		}
 	}
 
-	void OnTriggerExit2D(Collider2D c){
-		if(c.GetComponentInChildren<Gun>()){
-			if (zone == Glossary.Effect.Poison) {
-				c.GetComponentInChildren<Gun>().isPoisonous = false;
-			}
-			if (zone == Glossary.Effect.Piercing) {
-				c.GetComponentInChildren<Gun>().piercingZone = false;
-			}
-			if (zone == Glossary.Effect.Cooldown) {
-				c.GetComponentInChildren<Gun>().currentCoolDownTime = c.GetComponentInChildren<Gun>().coolDownTime;
-			}
-			if (zone == Glossary.Effect.Triple){
-				c.GetComponentInChildren<Gun>().hasTripleShot = false;
-			}
-			if(zone == Glossary.Effect.Bounce){
-				c.GetComponentInChildren<Gun>().doesBounce = false;
-			}
-			if(zone == Glossary.Effect.Explosive){
-				c.GetComponentInChildren<Gun>().isExplosive = false;
-			}
-			if(zone == Glossary.Effect.Shield){
-				c.GetComponent<Avatar> ().ShieldDown ();
+	void OnTriggerStay2D(Collider2D c){
+		if(c.GetComponent<Avatar>()){
+			for(int i =0;i<avatarsCollider.Length;i++){
+				if(avatarsCollider[i]==c){
+					avatarsCountdown [i] += Time.deltaTime;
+					if(avatarsCountdown[i]>2f){
+						c.GetComponent<Avatar> ().lifeOrbs.StockEffect (effect,new Color(color.r,color.g,color.b,1f));
+						avatarsCountdown [i] = 0;
+					}
+				}
 			}
 		}
 	}
+
+	void OnTriggerExit2D(Collider2D c){
+		if(c.GetComponent<Avatar>()){
+			for(int i =0;i<avatarsCollider.Length;i++){
+				if(avatarsCollider[i]==c){
+					avatarsCountdown [i] = 0;
+				}
+			}
+		}
+	}
+
+//	void OnTriggerEnter2D(Collider2D c){
+//		if(c.GetComponent<Avatar>()){
+//			c.GetComponent<Avatar> ().lifeOrbs.StockEffect (effect,color);
+//		}
+//	}
 
 	IEnumerator ChangeZoneWithTime(){
 		while(doesChange){
 			yield return new WaitForSecondsRealtime(timeToChange);
 
-			newZone = (Glossary.Effect)Random.Range(0,7);
+			newEffect = (Glossary.Effect)Random.Range(0,7);
 
-			if (newZone == Glossary.Effect.Poison)
-				newColor = new Color (84f/255f, 253f/255f, 84f/255f, 100f/255f);
-			if (newZone == Glossary.Effect.Piercing) 
-				newColor = new Color (253f/255f, 13f/255f, 253f/255f, 100f/255f);
-			if (newZone == Glossary.Effect.Cooldown)
-				newColor = new Color (84f/255f, 84f/255f, 253f/255f, 100f/255f);
-			if (newZone == Glossary.Effect.Triple)
-				newColor = new Color (253f/255f, 84f/255f, 84f/255f, 100f/255f);
-			if(newZone == Glossary.Effect.Bounce)
-				newColor = new Color (253f/255f, 253f/255f, 13f/255f, 100f/255f);
-			if(newZone == Glossary.Effect.Explosive)
-				newColor = new Color (253f/255f, 253f/255f, 84f/255f, 100f/255f);
-			if (newZone == Glossary.Effect.Shield)
-				newColor = new Color (84f/255f, 225/255f, 253f/255f, 100f/255f);
+			if (newEffect == Glossary.Effect.Poison)
+				newColor = poison;
+			if (newEffect == Glossary.Effect.Piercing) 
+				newColor = piercing;
+			if (newEffect == Glossary.Effect.Cooldown)
+				newColor = cooldown;
+			if (newEffect == Glossary.Effect.Triple)
+				newColor = triple;
+			if(newEffect == Glossary.Effect.Bounce)
+				newColor = bounce;
+			if(newEffect == Glossary.Effect.Explosive)
+				newColor = explosive;
+			if (newEffect == Glossary.Effect.Shield)
+				newColor = shield;
 
 
 			float plusR = (newColor.r-color.r)*0.1f;
@@ -106,98 +121,46 @@ public class Zone : MonoBehaviour {
 			}
 			GetComponent<CircleCollider2D> ().offset = new Vector2 (100,0);
 			yield return 0;
-			zone = newZone;
+			effect = newEffect;
 			GetComponent<CircleCollider2D> ().offset = new Vector2 (0,0);
 			RefreshColor();
 		}
 	}
 	void RefreshColor (){
-		if (zone == Glossary.Effect.Poison) {
-			spriteRenderer.color = new Color (84f/255f, 253f/255f, 84f/255f, 100f/255f);
+		if (effect == Glossary.Effect.Poison) {
+			spriteRenderer.color = poison;
 			color = GetComponent<SpriteRenderer> ().color;
 			orb.text.text = "VENENOSO";
 		}
-		if (zone == Glossary.Effect.Piercing) {
-			spriteRenderer.color = new Color (253f/255f, 13f/255f, 253f/255f, 100f/255f);
+		if (effect == Glossary.Effect.Piercing) {
+			spriteRenderer.color = piercing;
 			color = GetComponent<SpriteRenderer> ().color;
 			orb.text.text = "PERFURANTE";
 		}
-		if (zone == Glossary.Effect.Cooldown) {
-			spriteRenderer.color = new Color (84f/255f, 84f/255f, 253f/255f, 100f/255f);
+		if (effect == Glossary.Effect.Cooldown) {
+			spriteRenderer.color = cooldown;
 			color = GetComponent<SpriteRenderer> ().color;
 			orb.text.text = "METRALHADORA";
 		}
-		if (zone == Glossary.Effect.Triple){
-			spriteRenderer.color = new Color (253f/255f, 84f/255f, 84f/255f, 100f/255f);
+		if (effect == Glossary.Effect.Triple){
+			spriteRenderer.color = triple;
 			color = GetComponent<SpriteRenderer> ().color;
 			orb.text.text = "TIRO TRIPLO";
 		}
-		if(zone == Glossary.Effect.Bounce){
-			spriteRenderer.color = new Color (253f/255f, 84f/255f, 13f/255f, 100f/255f);
+		if(effect == Glossary.Effect.Bounce){
+			spriteRenderer.color = bounce;
 			color = GetComponent<SpriteRenderer> ().color;
 			orb.text.text = "RICOCHETEIA";
 		}
-		if (zone == Glossary.Effect.Explosive) {
-			spriteRenderer.color = new Color (253f/255f, 253f/255f, 84f/255f, 100f/255f);
+		if (effect == Glossary.Effect.Explosive) {
+			spriteRenderer.color = explosive;
 			color = GetComponent<SpriteRenderer> ().color;
 			orb.text.text = "EXPLOSIVA";
 		}
-		if(zone == Glossary.Effect.Shield){
-			spriteRenderer.color = new Color (84f/255f, 225/255f, 253f/255f, 100f/255f);
+		if(effect == Glossary.Effect.Shield){
+			spriteRenderer.color = shield;
 			color = GetComponent<SpriteRenderer> ().color;
 			orb.text.text = "ESCUDO";
-		}
-	}
-
-	void GiveEffect (Collider2D c){
-		if(c.GetComponentInChildren<Gun>()){
-			if (zone == Glossary.Effect.Poison) {
-				c.GetComponentInChildren<Gun>().isPoisonous = true;
-			}
-			if (zone == Glossary.Effect.Piercing) {
-				c.GetComponentInChildren<Gun>().piercingZone = true;
-			}
-			if (zone == Glossary.Effect.Cooldown) {
-				c.GetComponentInChildren<Gun>().currentCoolDownTime = coolDownTime;
-			}
-			if (zone == Glossary.Effect.Triple){
-				c.GetComponentInChildren<Gun>().hasTripleShot = true;
-			}
-			if(zone == Glossary.Effect.Bounce){
-				c.GetComponentInChildren<Gun>().doesBounce = true;
-			}
-			if(zone == Glossary.Effect.Explosive){
-				c.GetComponentInChildren<Gun>().isExplosive = true;
-			}
-			if(zone == Glossary.Effect.Shield){
-				c.GetComponent<Avatar> ().ShieldUp ();
-			}
-		}
-	}
-
-	void TakeEffectAway (Collider2D c){
-		if(c.GetComponentInChildren<Gun>()){
-			if (zone == Glossary.Effect.Poison) {
-				c.GetComponentInChildren<Gun>().isPoisonous = false;
-			}
-			if (zone == Glossary.Effect.Piercing) {
-				c.GetComponentInChildren<Gun>().piercingZone = false;
-			}
-			if (zone == Glossary.Effect.Cooldown) {
-				c.GetComponentInChildren<Gun>().currentCoolDownTime = c.GetComponentInChildren<Gun>().coolDownTime;
-			}
-			if (zone == Glossary.Effect.Triple){
-				c.GetComponentInChildren<Gun>().hasTripleShot = false;
-			}
-			if(zone == Glossary.Effect.Bounce){
-				c.GetComponentInChildren<Gun>().doesBounce = false;
-			}
-			if(zone == Glossary.Effect.Explosive){
-				c.GetComponentInChildren<Gun>().isExplosive = false;
-			}
-			if(zone == Glossary.Effect.Shield){
-				c.GetComponent<Avatar> ().ShieldDown ();
-			}
 		}
 	}
 
@@ -206,9 +169,9 @@ public class Zone : MonoBehaviour {
 		Zone[] zones = FindObjectsOfType<Zone> ();
 		while (i < zones.Length) {
 			i = 0;
-			zone = (Glossary.Effect)Random.Range (0, 7);
+			effect = (Glossary.Effect)Random.Range (0, 7);
 			foreach (Zone z in zones){
-				if(zone != z.zone || this == z){
+				if(effect != z.effect || this == z){
 					i++;
 				}
 			}
@@ -217,43 +180,43 @@ public class Zone : MonoBehaviour {
 		GetComponentInParent<Orb>().transform.position = new Vector3 (Random.Range(-16.0F,16.0F),Random.Range(-4.0F,4.0F),GetComponentInParent<Orb>().transform.position.z);
 	}
 
-	IEnumerator GiveVPs(){
-		int i;
-		Avatar[] avatars = FindObjectsOfType<Avatar> ();
-		while(1>0){
-			RaycastHit2D[] hits = new RaycastHit2D[10];
-			i = c2D.Cast(Vector2.zero, hits);
-			if(i != 0){
-				foreach (RaycastHit2D hit in hits){
-					if(hit.collider != null){
-						if(hit.collider.gameObject.GetComponent<Avatar>()){
-							foreach (Avatar a in avatars){
-								if(hit.collider.gameObject.GetComponent<Avatar>() == a){
-									a.victoryPoints++;
-								}
-							}
-						}
-					}
-				}
-				if(HP <=0){
-					Zone[] zones = FindObjectsOfType<Zone> ();
-					foreach (Avatar a in avatars) {
-						if(c2D.IsTouching(a.GetComponent<Collider2D>())){
-							bool hasSameZone = false;
-							foreach (Zone z in zones){
-								if(z.c2D.IsTouching(a.GetComponent<Collider2D>()) && z.zone == zone && z != this){
-									hasSameZone = true;
-								}
-							}
-							if(!hasSameZone){
-								TakeEffectAway (a.GetComponent<Collider2D>());
-							}
-						}
-					}
-					Destroy (GetComponentInParent<Orb>().gameObject);
-				}
-			}
-			yield return new WaitForSecondsRealtime (1.5f);
-		}
-	}
+//	IEnumerator GiveVPs(){
+//		int i;
+//		Avatar[] avatars = FindObjectsOfType<Avatar> ();
+//		while(1>0){
+//			RaycastHit2D[] hits = new RaycastHit2D[10];
+//			i = c2D.Cast(Vector2.zero, hits);
+//			if(i != 0){
+//				foreach (RaycastHit2D hit in hits){
+//					if(hit.collider != null){
+//						if(hit.collider.gameObject.GetComponent<Avatar>()){
+//							foreach (Avatar a in avatars){
+//								if(hit.collider.gameObject.GetComponent<Avatar>() == a){
+//									a.victoryPoints++;
+//								}
+//							}
+//						}
+//					}
+//				}
+//				if(HP <=0){
+//					Zone[] zones = FindObjectsOfType<Zone> ();
+//					foreach (Avatar a in avatars) {
+//						if(c2D.IsTouching(a.GetComponent<Collider2D>())){
+//							bool hasSameZone = false;
+//							foreach (Zone z in zones){
+//								if(z.c2D.IsTouching(a.GetComponent<Collider2D>()) && z.zone == zone && z != this){
+//									hasSameZone = true;
+//								}
+//							}
+//							if(!hasSameZone){
+//								TakeEffectAway (a.GetComponent<Collider2D>());
+//							}
+//						}
+//					}
+//					Destroy (GetComponentInParent<Orb>().gameObject);
+//				}
+//			}
+//			yield return new WaitForSecondsRealtime (1.5f);
+//		}
+//	}
 }

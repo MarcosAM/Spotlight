@@ -18,11 +18,13 @@ public class Avatar : MonoBehaviour {
 	[HideInInspector]public Vector2 currentColliderSize;
 	[HideInInspector]public LifeOrbs lifeOrbs;
 	[HideInInspector]public Scope scope;
+	ScoreKeeper scoreKeeper;
 
 	public float currentLife=5;
 	public float maxLife=5;
 	public float timeToSpawn;
 	public float regenerateTime = 1.5F;
+	public bool isDead = false;
 	[HideInInspector]public float stunDuration = 0.5f;
 	[HideInInspector]public bool isDying = false;
 
@@ -46,6 +48,7 @@ public class Avatar : MonoBehaviour {
 		currentColliderSize = Vector2.one;
 		lifeOrbs = GetComponentInChildren<LifeOrbs> ();
 //		lifeOrbs.RefreshLifeOrbs ();
+		scoreKeeper = FindObjectOfType<ScoreKeeper>();
 	}
 
 	void OnTriggerStay2D (Collider2D c){
@@ -153,18 +156,26 @@ public class Avatar : MonoBehaviour {
 		lifeOrbs.TakeDamage(damage);
 	}
 
-	public IEnumerator Die ()
-	{
-		if (orb != null) {
-			orb.Release();
-			orb = null;
-		}
-		FindObjectOfType<ScoreKeeper>().RefreshGameState();
+//	public IEnumerator Die ()
+//	{
+//		if (orb != null) {
+//			orb.Release();
+//			orb = null;
+//		}
+//		FindObjectOfType<ScoreKeeper>().RefreshGameState();
+//		Refresh();
+//		transform.position = new Vector3(300,300,transform.position.z);
+//		inputManager.isControllingAvatar = false;
+//		yield return new WaitForSecondsRealtime(timeToSpawn);
+//		inputManager.isControllingAvatar = true;
+//	}
+
+	public void Die (){
 		Refresh();
 		transform.position = new Vector3(300,300,transform.position.z);
 		inputManager.isControllingAvatar = false;
-		yield return new WaitForSecondsRealtime(timeToSpawn);
-		inputManager.isControllingAvatar = true;
+		isDead = true;
+		scoreKeeper.CheckIfEnded (this);
 	}
 
 	public void Refresh(){

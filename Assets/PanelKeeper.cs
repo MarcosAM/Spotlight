@@ -26,4 +26,17 @@ public class PanelKeeper : MonoBehaviour {
 		p3Image.color = color3;
 		p4Image.color = color4;
 	}
+
+	public void RefreshPanels (Avatar[] a){
+		DontDestroyOnLoad(gameObject);
+		p1Text.text = "P"+ a[0].inputManager.number;
+		p2Text.text = "P"+ a[1].inputManager.number;
+		p3Text.text = "P"+ a[2].inputManager.number;
+		p4Text.text = "P"+ a[3].inputManager.number;
+		p1Image.color = a[0].spriteRenderer.color;
+		p2Image.color = a[1].spriteRenderer.color;
+		p3Image.color = a[2].spriteRenderer.color;
+		p4Image.color = a[3].spriteRenderer.color;
+	}
+
 }

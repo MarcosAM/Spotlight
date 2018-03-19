@@ -67,7 +67,7 @@ public class LifeOrb : MonoBehaviour {
 	void DestroyItself(){
 		isDestroyed = true;
 		spriteRenderer.enabled = false;
-		lifeOrbsManager.CheckToDeactivate (effect);
+//		lifeOrbsManager.CheckToDeactivate (effect);
 	}
 
 	public void ReceiveEffect (Glossary.Effect e, Color c){
@@ -82,7 +82,6 @@ public class LifeOrb : MonoBehaviour {
 	public void Initialize(Color newColor, LifeOrbs lom){
 		currentHP = maxHP;
 		spriteRenderer = GetComponent<SpriteRenderer> ();
-		ChangeColor (newColor);
 		lifeOrbsManager = lom;
 	}
 

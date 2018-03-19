@@ -6,81 +6,45 @@ using UnityEngine.UI;
 
 public class ScoreKeeper : MonoBehaviour {
 
-	public float vpointsToWin;
 	public Avatar[] players;
-	Avatar[] ranking;
+	int[] ranking;
+	Color[] colors;
 	int amountOfPlayers;
 
 	public PanelKeeper panelKeepers;
-	public Text vpToWinText;
 
 	void Start (){
 		DontDestroyOnLoad(gameObject);
 		players = FindObjectsOfType<Avatar>();
 		amountOfPlayers = players.Length;
-		ranking = new Avatar[players.Length];
-//		RefreshGameState ();
+		ranking = new int[players.Length];
+		colors = new Color[players.Length];
 	}
 
-//	public void RefreshGameState(){
-//		for(int i = 0;i<amountOfPlayers;i++){
-//			players[i].position = 1;
-//			for(int j = 0; j<amountOfPlayers;j++){
-//				if(players[i].victoryPoints < players[j].victoryPoints){
-//					players[i].position ++;
-//				}
-//			}
-//		}
-//		for(int l= 0;l<amountOfPlayers;l++){
-//			players[l].myWorth = (amountOfPlayers+1)-players[l].position;
-////			players[l].worthHUD.RefreshWorthHUD(players[l].myWorth);
-//		}
-//		for(int m= 0;m<amountOfPlayers;m++){
-//			if(players[m].victoryPoints >= vpointsToWin){
-//				EndGame(players[m].victoryPoints,players[m].spriteRenderer.color, m);
-//				return;
-//			}
-//		}
-//	}
-
-//	void EndGame (int number, Color color, int n){
-//
-//		int[] numbers = new int[4];
-//		Color[] colors = new Color[4];
-//
-//		numbers[0] = number;
-//		colors[0] = color;
-//
-//		int m = 1;
-//		for (int i = 0; i<4;i++){
-//			if(n!=i){
-//				numbers[m] = players[i].victoryPoints;
-//				colors[m] = players[i].spriteRenderer.color;
-//				m++;
-//			}
-//		}
-//		SceneManager.LoadScene("End Game");
-//		PanelKeeper panelKeeper = Instantiate(panelKeepers);
-//		panelKeeper.RefreshPanels(numbers[0],numbers[1],numbers[2],numbers[3],colors[0],colors[1],colors[2],colors[3]);
-//	}
-
-	public void CheckIfEnded(Avatar a){
-		for (int i = players.Length-1;i>=0;i--){
-			if(i==1){
-				foreach(Avatar p in players){
-					if(!p.isDead){
-						ranking [0] = p;
-						break;
+	public void CheckIfEnded (Avatar a)
+	{
+		for (int i = players.Length - 1; i >= 0; i--) {
+			if (ranking [i] == 0) {
+				ranking [i] = a.inputManager.number;
+				colors [i] = a.spriteRenderer.color;
+				if (i == 1) {
+					foreach (Avatar p in players) {
+						if (!p.isDead) {
+							ranking [0] = p.inputManager.number;
+							colors [0] = p.spriteRenderer.color;
+						}
 					}
+				} else {
+				return;
 				}
 			}
-			if(ranking[i]!=null){
-				ranking [i] = a;
-				break;
-			}
 		}
+		TempHUD[] tempHUDs = FindObjectsOfType<TempHUD>();
+		foreach (TempHUD tHUD in tempHUDs){
+			Destroy(tHUD.gameObject);
+		}
+		PanelKeeper panelKeeper = Instantiate(panelKeepers,transform);
+		panelKeeper.RefreshPanels (ranking,colors);
 		SceneManager.LoadScene("End Game");
-		PanelKeeper panelKeeper = Instantiate(panelKeepers);
-		panelKeeper.RefreshPanels (ranking);
 	}
 }

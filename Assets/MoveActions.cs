@@ -113,6 +113,9 @@ public class MoveActions : MonoBehaviour {
 	{
 		if (canDash) {
 			velocity = velocity*3f;
+			if(velocity == Vector2.zero){
+				velocity = movementTransform.up* -1 * currentSpeed*3f;
+			}
 			canDash = false;
 		}
 	}
